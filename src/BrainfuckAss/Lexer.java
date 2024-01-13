@@ -1,22 +1,51 @@
 package BrainfuckAss;
 
-import java.io.*;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 
-@SuppressWarnings({"CatchMayIgnoreException", "RedundantSuppression"})
-public class BrainfuckAss   //Interpreter to the brainfuckAss language.
-{
+@SuppressWarnings("RedundantSuppression")
+public class Lexer {
 
-    private static boolean hadError = false;
+    private boolean hadError = false;
+    private int operatorIndex = 0;
+    private final String source;
 
-    public static void interpret(String input) {}
+    public Lexer(String source){
+        this.source = source;
+    }
 
+    @SuppressWarnings("UnusedReturnValue")
+    public String _precompile(String outputPath)
+    {
+        //Remove fluff:
+        StringBuilder strBuilder = new StringBuilder();
+        for(int i = 0; i < source.length(); i++){
+            char c = source.charAt(i);
+            if(isReserved(c)){
+                strBuilder.append(c);
+            }
+        }
+        String fluffRemoved = strBuilder.toString();
+        //remove comments and newlines:
+        String rawCode = "";
+        try{
+            rawCode = removeCommentsAndNewlines(fluffRemoved);
+        } catch(LexerError error) {
+            System.err.println("Lexing error: " + error.getMessage());
+            hadError = true;
+        }
+        if(!hadError){
+            writeToFile(fluffRemoved, outputPath);  //for debug purposes.
+            return rawCode;
+        }
+        else return "";
+    }
 
-    private static String removeCommentsAndNewlines(String input) throws LexerError
+    private String removeCommentsAndNewlines(String input) throws LexerError
     {
         PrecompileState state = PrecompileState.Code;
-        int operatorIndex = 0;
         while(true)
         {
             if(!(operatorIndex < input.length())) break;
@@ -38,12 +67,22 @@ public class BrainfuckAss   //Interpreter to the brainfuckAss language.
         return "";
     }
 
-    private static boolean lastChar(String input, int operatorIndex)
+    private boolean match(char expected)
+    {
+        boolean returnValue = false;
+        if(expected == source.charAt(operatorIndex)){
+            operatorIndex++;
+            returnValue = true;
+        }
+        return returnValue;
+    }
+
+    private boolean lastChar(String input, int operatorIndex)
     {
         return operatorIndex == (input.length() - 1);
     }
 
-    private static boolean isReserved(char c)
+    private boolean isReserved(char c)
     {
         boolean returnValue;
         switch(c){
@@ -78,7 +117,7 @@ public class BrainfuckAss   //Interpreter to the brainfuckAss language.
     }
 
     @SuppressWarnings({"TryWithIdenticalCatches", "ResultOfMethodCallIgnored"})
-    private static void writeToFile(String input, String filePath) {
+    private void writeToFile(String input, String filePath) {
         boolean success = false;
         while (!success) {
             File file = new File(filePath);
