@@ -1,5 +1,6 @@
 package BrainfuckAss;
 
+import java.util.Map; import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -13,8 +14,11 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
     private static byte memory[] = new byte[length];
     private static int loopDepth = 0;
     private static int operatorIndex = 0; // Parsing through each character of the code
+    private static final Map<Character, Integer> locatorMap = new HashMap<>();
 
     public static void interpret(List<Operator> operators) {
+        fillOutLocatorMap(operators); //horrible method name because intox but this is fine for now.
+        //Tool.Debugger.debug("Interpreter", locatorMap);
         fullInterpret(operators);
         //lazyInterpret(input);
     }
@@ -23,6 +27,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
         BrainfuckOriginal.BrainfuckEngine.interpret(input);
     }
 
+    @SuppressWarnings("DataFlowIssue")
     public static void fullInterpret(List<Operator> operators) {
         //for (int i = 0; i < s.length(); i++)
         while (true) {
@@ -38,19 +43,17 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                     "LOOPBOTTOM:");*/
 
             // > moves the pointer to the right
-            if (operators.get(operatorIndex).type == OperatorType.LEFT) {
-                if (ptr == length - 1)//If memory is full
-                    ptr = 0;//pointer is returned to zero
+            if (operators.get(operatorIndex).type == OperatorType.RIGHT) {
+                if (ptr == length - 1) //If memory is full
+                    ptr = 0; //pointer is returned to zero
                 else
                     ptr++;
             }
 
             // < moves the pointer to the left
-            else if (operators.get(operatorIndex).type == OperatorType.RIGHT) {
-                if (ptr == 0) // If the pointer reaches zero
-                    // pointer is returned to rightmost memory
-                    // position
-                    ptr = length - 1;
+            else if (operators.get(operatorIndex).type == OperatorType.LEFT) {
+                if (ptr == 0) // If the pointer tries to go left past zero for now I have decided the pointer is returned to index 0.
+                    ptr = 0;
                 else
                     ptr--;
             }
@@ -108,7 +111,23 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                     }
                 }
             }
+
+            else if(operators.get(operatorIndex).type == OperatorType.BRA)
+            {
+                Operator currentOperator = operators.get(operatorIndex);
+                operatorIndex = locatorMap.get((char)currentOperator.literal);
+            }
+
             operatorIndex++;
+        }
+    }
+
+    private static void fillOutLocatorMap(List<Operator> operators)
+    {
+        for(Operator op : operators){
+            if(op.type == OperatorType.SET_LOCATOR){
+                locatorMap.put((char)op.literal, op.operatorIndex);
+            }
         }
     }
 
