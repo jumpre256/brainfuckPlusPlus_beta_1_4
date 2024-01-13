@@ -1,6 +1,7 @@
 package BrainfuckAss;
 
 import java.io.*;
+import java.util.List;
 import java.util.Scanner;
 
 @SuppressWarnings({"CatchMayIgnoreException", "AccessStaticViaInstance", "DuplicatedCode", "RedundantSuppression"})
@@ -30,7 +31,7 @@ public class BrainfuckAss {
         } catch (Exception e) {}
         String noWhitespace = stripCodeOfWhitespace(codeOfFileStrBuilder.toString());
         Lexer lexer = new Lexer(noWhitespace);
-        String code = lexer._precompile("program.bfac");
+        List<Operator> code = lexer.assemble("program.bfac");
         Interpreter.interpret(code);
     }
 

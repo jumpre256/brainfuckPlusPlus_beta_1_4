@@ -1,5 +1,6 @@
 package BrainfuckAss;
 
+import java.util.List;
 import java.util.Scanner;
 
 @SuppressWarnings({"CatchMayIgnoreException", "RedundantSuppression"})
@@ -13,8 +14,8 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
     private static int loopDepth = 0;
     private static int operatorIndex = 0; // Parsing through each character of the code
 
-    public static void interpret(String input) {
-        fullInterpret(input);
+    public static void interpret(List<Operator> operators) {
+        fullInterpret(operators);
         //lazyInterpret(input);
     }
 
@@ -22,13 +23,11 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
         BrainfuckOriginal.BrainfuckEngine.interpret(input);
     }
 
-    public static void fullInterpret(String input) {
+    public static void fullInterpret(List<Operator> operators) {
         //for (int i = 0; i < s.length(); i++)
         while (true) {
-            if (!(operatorIndex < input.length())) break;
-            // BrainFuck is a tiny language with only
-            // eight instructions. In this loop we check
-            // and execute all those eight instructions
+            if (operators.get(operatorIndex).type == OperatorType.EOF) break;
+            // BrainFuck is a small language with only eight instructions. In this loop we check and execute each of those eight instructions
 
             /*Tool.Debugger.debug("Interpreter",
                     "Executing: " + input.charAt(operatorIndex));
@@ -39,7 +38,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                     "LOOPBOTTOM:");*/
 
             // > moves the pointer to the right
-            if (input.charAt(operatorIndex) == '>') {
+            if (operators.get(operatorIndex).type == OperatorType.LEFT) {
                 if (ptr == length - 1)//If memory is full
                     ptr = 0;//pointer is returned to zero
                 else
@@ -47,9 +46,8 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
             }
 
             // < moves the pointer to the left
-            else if (input.charAt(operatorIndex) == '<') {
+            else if (operators.get(operatorIndex).type == OperatorType.RIGHT) {
                 if (ptr == 0) // If the pointer reaches zero
-
                     // pointer is returned to rightmost memory
                     // position
                     ptr = length - 1;
@@ -59,33 +57,33 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
 
             // + increments the value of the memory
             // cell under the pointer
-            else if (input.charAt(operatorIndex) == '+')
+            else if (operators.get(operatorIndex).type == OperatorType.ADD)
                 memory[ptr]++;
 
                 // - decrements the value of the memory cell
                 // under the pointer
-            else if (input.charAt(operatorIndex) == '-')
+            else if (operators.get(operatorIndex).type == OperatorType.MINUS)
                 memory[ptr]--;
 
                 // . outputs the character signified by the
                 // cell at the pointer
-            else if (input.charAt(operatorIndex) == '.')
+            else if (operators.get(operatorIndex).type == OperatorType.DOT)
                 System.out.print((char) (memory[ptr]));
 
                 // , inputs a character and store it in the
                 // cell at the pointer
-            else if (input.charAt(operatorIndex) == ',')
+            else if (operators.get(operatorIndex).type == OperatorType.COMMA)
                 memory[ptr] = (byte) (ob.next().charAt(0));
 
                 // [ jumps past the matching ] if the cell
                 // under the pointer is 0
-            else if (input.charAt(operatorIndex) == '[') {
+            else if (operators.get(operatorIndex).type == OperatorType.LOOP_OPEN) {
                 if (memory[ptr] == 0) {
                     operatorIndex++;
-                    while (loopDepth > 0 || input.charAt(operatorIndex) != ']') {
-                        if (input.charAt(operatorIndex) == '[')
+                    while (loopDepth > 0 || operators.get(operatorIndex).type != OperatorType.LOOP_CLOSE) {
+                        if (operators.get(operatorIndex).type == OperatorType.LOOP_OPEN)
                             loopDepth++;
-                        else if (input.charAt(operatorIndex) == ']')
+                        else if (operators.get(operatorIndex).type == OperatorType.LOOP_CLOSE)
                             loopDepth--;
                         operatorIndex++;
 
@@ -96,13 +94,13 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
 
             // ] jumps back to the matching [ if the
             // cell under the pointer is nonzero
-            else if (input.charAt(operatorIndex) == ']') {
+            else if (operators.get(operatorIndex).type == OperatorType.LOOP_CLOSE) {
                 if (memory[ptr] != 0) {
                     operatorIndex--;
-                    while (loopDepth > 0 || input.charAt(operatorIndex) != '[') {
-                        if (input.charAt(operatorIndex) == ']')
+                    while (loopDepth > 0 || operators.get(operatorIndex).type != OperatorType.LOOP_OPEN) {
+                        if (operators.get(operatorIndex).type == OperatorType.LOOP_CLOSE)
                             loopDepth++;
-                        else if (input.charAt(operatorIndex) == '[')
+                        else if (operators.get(operatorIndex).type == OperatorType.LOOP_OPEN)
                             loopDepth--;
                         operatorIndex--;
 
