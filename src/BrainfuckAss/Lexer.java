@@ -36,7 +36,7 @@ public class Lexer {
         List<Operator> operators = null;
         try {
             operators = doLexMain(fluffRemoved);
-            operators.add(new Operator(OperatorType.EOF, null, lineNumber, current));
+            operators.add(new Operator(OperatorType.EOF, null, lineNumber, operatorIndex));
         } catch (LexerError error) {
             System.err.printf("Error: [line %d]: %s%n", error.getLineNumber(), error.getMessage());
             hadError = true;
