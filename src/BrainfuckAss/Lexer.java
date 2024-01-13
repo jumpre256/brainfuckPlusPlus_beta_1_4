@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 
-@SuppressWarnings("RedundantSuppression")
+@SuppressWarnings({"RedundantSuppression", "StatementWithEmptyBody"})
 public class Lexer {
 
     private boolean hadError = false;
@@ -43,28 +43,58 @@ public class Lexer {
         else return "";
     }
 
-    private String removeCommentsAndNewlines(String input) throws LexerError
+    private String removeCommentsAndNewlines(String input) throws LexerError    //not yet implemented
     {
+        return "";
+    }
+
+    @SuppressWarnings("ConstantValue")
+    private String removeCommentsAndNewlines_fail(String input) throws LexerError
+    //code for this method is a pretty huge mess, doesn't execute currently, to redo another time, coding (CON'T)
+            //[] with a different design philosophy for this method.
+    {
+        StringBuilder strBuilder = new StringBuilder();
         PrecompileState state = PrecompileState.Code;
         while(true)
         {
             if(!(operatorIndex < input.length())) break;
             char c = input.charAt(operatorIndex);
-            if(c == '#' && lastChar(input, operatorIndex)) {
-                state = PrecompileState.LineComment;
-            } else if(c == '#' && input.charAt(operatorIndex + 1) != '{' && input.charAt(operatorIndex + 1) != '}'){
-                state = PrecompileState.LineComment;
-            } else if(c == '#' && input.charAt(operatorIndex + 1) == '{' && state == PrecompileState.Code){
-                state = PrecompileState.MultilineComment;
-            } else if(c == '#' && input.charAt(operatorIndex + 1) == '{' && state != PrecompileState.Code) {
-                throw new LexerError("Cannot initiate a new multiline comment within an existing multiline comment.");
+            Tool.Debugger.debug(this, "Processing: " + c);
+            if(state == PrecompileState.Code) {
+                if (c == '#' && !lastChar()) {
+                    advance();  //consume the # character.
+                    if (match('{')) {
+                        if (state == PrecompileState.Code) state = PrecompileState.MultilineComment;
+                        else
+                            throw new LexerError("Cannot initiate a new multiline comment within an existing multiline comment.");
+                    }
+                /*else if(match('}')) {
+                    throw new LexerError("Invalid comment format.");
+                }*/
+                    else {
+                        state = PrecompileState.LineComment;
+                    /*if(match('\n')) state = PrecompileState.Code;
+                    else advance();*/
+                    }
+                } else if (c == '}' && !lastChar()) {
+                    //Tool.Debugger.debug(this, "found }");
+                    advance();
+                    if (match('#')) {
+                        //Tool.Debugger.debug(this, "found }#");
+                        if (state == PrecompileState.MultilineComment) state = PrecompileState.Code;
+                        else throw new LexerError("Unmatched multiline comment.");
+                    } else {
+                        //do nothing
+                    }
+                }
             }
-
-            if(c == '}' && input.charAt(operatorIndex + 1) != '{') {}
-
-            operatorIndex++;
         }
         return "";
+    }
+
+    private char peek()
+    {
+        return source.charAt(operatorIndex+1);
     }
 
     private boolean match(char expected)
@@ -77,9 +107,14 @@ public class Lexer {
         return returnValue;
     }
 
-    private boolean lastChar(String input, int operatorIndex)
+    private void advance()
     {
-        return operatorIndex == (input.length() - 1);
+        operatorIndex++;
+    }
+
+    private boolean lastChar()
+    {
+        return operatorIndex == (source.length() - 1);
     }
 
     private boolean isReserved(char c)
