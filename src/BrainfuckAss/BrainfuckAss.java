@@ -1,37 +1,48 @@
 package BrainfuckAss;
 
 import java.io.*;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.util.Scanner;
 
-@SuppressWarnings({"CatchMayIgnoreException", "RedundantSuppression"})
-public class BrainfuckAss   //Interpreter to the brainfuckAss language.
-{
-    public static void interpret(String input) {}
+@SuppressWarnings({"CatchMayIgnoreException", "AccessStaticViaInstance", "DuplicatedCode", "RedundantSuppression"})
+public class BrainfuckAss {
 
-}
+    private static final Scanner javaScanner = new Scanner(System.in);
 
-
-/*private String removeCommentsAndNewlines(String input) throws LexerError
-    {
-        PrecompileState state = PrecompileState.Code;
-        while(true)
-        {
-            if(!(operatorIndex < input.length())) break;
-            char c = input.charAt(operatorIndex);
-            if(c == '#' && lastChar(input, operatorIndex)) {
-                state = PrecompileState.LineComment;
-            } else if(c == '#' && input.charAt(operatorIndex + 1) != '{' && input.charAt(operatorIndex + 1) != '}'){
-                state = PrecompileState.LineComment;
-            } else if(c == '#' && input.charAt(operatorIndex + 1) == '{' && state == PrecompileState.Code){
-                state = PrecompileState.MultilineComment;
-            } else if(c == '#' && input.charAt(operatorIndex + 1) == '{' && state != PrecompileState.Code) {
-                throw new LexerError("Cannot initiate a new multiline comment within an existing multiline comment.");
-            }
-
-            if(c == '}' && input.charAt(operatorIndex + 1) != '{') {}
-
-            operatorIndex++;
+    public static void main(String[] args) {
+        if (args.length == 1) {
+            runFile(args[0]);
+        } else {
+            System.err.print("Invalid use of program.");
         }
-        return "";
-    }*/
+    }
+
+    public static void runFile(String filePath) {
+        File file = new File(filePath);
+        StringBuilder codeOfFileStrBuilder = new StringBuilder();
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                //debug(line);
+                codeOfFileStrBuilder.append(line).append("\n");
+            }
+            bufferedReader.close();
+        } catch (Exception e) {}
+        String noWhitespace = stripCodeOfWhitespace(codeOfFileStrBuilder.toString());
+        Lexer lexer = new Lexer(noWhitespace);
+        lexer._precompile("program.bfac");
+        //BrainfuckAss.interpret(noWhitespace);
+    }
+
+    private static String stripCodeOfWhitespace(String input)
+    {
+        StringBuilder strBuilder = new StringBuilder();
+        for(int i = 0; i < input.length(); i++){
+            char c = input.charAt(i);
+            if(c != ' ' && c != '\r' && c != '\t'){
+                strBuilder.append(c);
+            }
+        }
+        return strBuilder.toString();
+    }
+}
