@@ -2,7 +2,7 @@ package BrainfuckOriginal;
 
 import java.util.Scanner;
 
-class reading_BrainfuckCode     //code credit: https://www.geeksforgeeks.org/brainfuck-interpreter-java/
+public class BrainfuckEngine     //code credit: https://www.geeksforgeeks.org/brainfuck-interpreter-java/
 {
     private static Scanner ob = new Scanner(System.in);
     private static int ptr; // Data pointer
@@ -36,11 +36,9 @@ class reading_BrainfuckCode     //code credit: https://www.geeksforgeeks.org/bra
 
             /*Tool.Debugger.debug("reading_BrainfuckCore",
                     "Executing: " + input.charAt(operatorIndex));
-
             Tool.Debugger.debug("reading_BrainfuckCore",
                     "LOOPTOP:\n\tloopDepth: " + loopDepth + "\n"
                     + "\toperatorIndex: " + operatorIndex);
-
             Tool.Debugger.debug("reading_BrainfuckCore",
                     "LOOPBOTTOM:");*/
 

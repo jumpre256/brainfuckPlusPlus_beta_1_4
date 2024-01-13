@@ -2,7 +2,7 @@ package BrainfuckOriginal;
 
 import java.util.*;
 
-public class Brainfuck     //code credit: https://www.geeksforgeeks.org/brainfuck-interpreter-java/
+public class BrainfuckGeeksforgeeks     //code credit: https://www.geeksforgeeks.org/brainfuck-interpreter-java/
 {
     private static Scanner ob = new Scanner(System.in);
     private static int ptr; // Data pointer
@@ -111,6 +111,6 @@ public class Brainfuck     //code credit: https://www.geeksforgeeks.org/brainfuc
         }
     }
 
-    public Brainfuck() {}
+    public BrainfuckGeeksforgeeks() {}
 
 }

@@ -30,8 +30,8 @@ public class BrainfuckAss {
         } catch (Exception e) {}
         String noWhitespace = stripCodeOfWhitespace(codeOfFileStrBuilder.toString());
         Lexer lexer = new Lexer(noWhitespace);
-        lexer._precompile("program.bfac");
-        //BrainfuckAss.interpret(noWhitespace);
+        String code = lexer._precompile("program.bfac");
+        Interpreter.interpret(code);
     }
 
     private static String stripCodeOfWhitespace(String input)

@@ -8,7 +8,7 @@ public class RunBrainfuck {
 
     private static Scanner javaScanner = new Scanner(System.in);
     @SuppressWarnings({"unused", "InstantiationOfUtilityClass"})
-    private static final reading_BrainfuckCode brainfuckCore = new reading_BrainfuckCode();
+    private static final BrainfuckEngine brainfuckCore = new BrainfuckEngine();
 
     public static void main(String args[]) {
         if (args.length == 1) {
