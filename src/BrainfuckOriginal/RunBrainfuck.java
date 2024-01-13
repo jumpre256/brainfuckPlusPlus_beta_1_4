@@ -1,3 +1,5 @@
+package BrainfuckOriginal;
+
 import java.io.*;
 import java.util.Scanner;
 
@@ -6,7 +8,7 @@ public class RunBrainfuck {
 
     private static Scanner javaScanner = new Scanner(System.in);
     @SuppressWarnings({"unused", "InstantiationOfUtilityClass"})
-    private static final reading_BrainfuckCore brainfuckCore = new reading_BrainfuckCore();
+    private static final reading_BrainfuckCode brainfuckCore = new reading_BrainfuckCode();
 
     public static void main(String args[]) {
         if (args.length == 1) {

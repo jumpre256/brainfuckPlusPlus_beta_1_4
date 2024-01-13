@@ -1,6 +1,8 @@
+package BrainfuckOriginal;
+
 import java.util.Scanner;
 
-class reading_BrainfuckCore     //code credit: https://www.geeksforgeeks.org/brainfuck-interpreter-java/
+class reading_BrainfuckCode     //code credit: https://www.geeksforgeeks.org/brainfuck-interpreter-java/
 {
     private static Scanner ob = new Scanner(System.in);
     private static int ptr; // Data pointer
@@ -32,14 +34,14 @@ class reading_BrainfuckCore     //code credit: https://www.geeksforgeeks.org/bra
             // eight instructions. In this loop we check
             // and execute all those eight instructions
 
-            /*Debugger.debug("reading_BrainfuckCore",
+            /*Tool.Debugger.debug("reading_BrainfuckCore",
                     "Executing: " + input.charAt(operatorIndex));
 
-            Debugger.debug("reading_BrainfuckCore",
+            Tool.Debugger.debug("reading_BrainfuckCore",
                     "LOOPTOP:\n\tloopDepth: " + loopDepth + "\n"
                     + "\toperatorIndex: " + operatorIndex);
 
-            Debugger.debug("reading_BrainfuckCore",
+            Tool.Debugger.debug("reading_BrainfuckCore",
                     "LOOPBOTTOM:");*/
 
             // > moves the pointer to the right
@@ -98,7 +100,7 @@ class reading_BrainfuckCore     //code credit: https://www.geeksforgeeks.org/bra
                             loopDepth--;
                         operatorIndex++;
 
-                        /*Debugger.debug("reading_BrainfuckCore",
+                        /*Tool.Debugger.debug("reading_BrainfuckCore",
                                 "\tloopDepth: " + loopDepth + "\n"
                                         + "\toperatorIndex: " + operatorIndex);*/
                     }
@@ -120,7 +122,7 @@ class reading_BrainfuckCore     //code credit: https://www.geeksforgeeks.org/bra
                             loopDepth--;
                         operatorIndex--;
 
-                        /*Debugger.debug("reading_BrainfuckCore",
+                        /*Tool.Debugger.debug("reading_BrainfuckCore",
                                 "\tloopDepth: " + loopDepth + "\n"
                                         + "\toperatorIndex: " + operatorIndex);*/
                     }

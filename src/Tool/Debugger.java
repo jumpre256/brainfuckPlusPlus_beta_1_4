@@ -1,3 +1,5 @@
+package Tool;
+
 public class Debugger {
 
     public static void debug(String caller, Object message)

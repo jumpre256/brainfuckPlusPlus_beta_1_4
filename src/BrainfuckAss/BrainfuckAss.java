@@ -1,9 +1,13 @@
+package BrainfuckAss;
+
 import java.io.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 @SuppressWarnings({"CatchMayIgnoreException", "RedundantSuppression"})
 public class BrainfuckAss {
+
+    private static boolean hadError = false;
 
     public static void interpret(String input) {}
 
@@ -21,22 +25,48 @@ public class BrainfuckAss {
         }
         String fluffRemoved = strBuilder.toString();
         //remove comments and newlines:
-        String rawCode = removeCommentsAndNewlines(fluffRemoved);
-        writeToFile(fluffRemoved, outputPath);  //for debug purposes.
-        return rawCode;
+        String rawCode = "";
+        try{
+            rawCode = removeCommentsAndNewlines(fluffRemoved);
+        } catch(ScannerError error) {
+            System.err.println("Lexing error: " + error.getMessage());
+            hadError = true;
+        }
+        if(!hadError){
+            writeToFile(fluffRemoved, outputPath);  //for debug purposes.
+            return rawCode;
+        }
+        else return "";
     }
 
-    private static String removeCommentsAndNewlines(String input)
+    private static String removeCommentsAndNewlines(String input) throws ScannerError
     {
-        BrainfuckAss.PrecompileState state = BrainfuckAss.PrecompileState.Code;
+        PrecompileState state = PrecompileState.Code;
         int operatorIndex = 0;
         while(true)
         {
             if(!(operatorIndex < input.length())) break;
+            char c = input.charAt(operatorIndex);
+            if(c == '#' && lastChar(input, operatorIndex)) {
+                state = PrecompileState.LineComment;
+            } else if(c == '#' && input.charAt(operatorIndex + 1) != '{' && input.charAt(operatorIndex + 1) != '}'){
+                state = PrecompileState.LineComment;
+            } else if(c == '#' && input.charAt(operatorIndex + 1) == '{' && state == PrecompileState.Code){
+                state = PrecompileState.MultilineComment;
+            } else if(c == '#' && input.charAt(operatorIndex + 1) == '{' && state != PrecompileState.Code) {
+                throw new ScannerError("Cannot initiate a new multiline comment within an existing multiline comment.");
+            }
+
+            if(c == '}' && input.charAt(operatorIndex + 1) != '{') {}
 
             operatorIndex++;
         }
         return "";
+    }
+
+    private static boolean lastChar(String input, int operatorIndex)
+    {
+        return operatorIndex == (input.length() - 1);
     }
 
     private static boolean isReserved(char c)
@@ -66,11 +96,10 @@ public class BrainfuckAss {
                 returnValue = true; break;
             default:
                 returnValue = ((c >= 48) && (c <= 57)) || ((c >= 97) && (c <= 122));
-                //Debugger.debug("BrainfuckAss", c + ": " + (int)c + "\n", ' ');
+                Tool.Debugger.debug("BrainfuckAss.BrainfuckAss", c + ": " + (int)c + "\n", ' ');
                 break;
 
         }
-
         return returnValue;
     }
 
@@ -90,7 +119,7 @@ public class BrainfuckAss {
                 } catch(Exception e1) {}
             } catch(Exception e0) {}
         }
-        System.out.println("Successfully precompiled code.");
+        System.out.println("Succesfully wrote to file.");
     }
 
     private enum PrecompileState {

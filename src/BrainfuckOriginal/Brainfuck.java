@@ -1,8 +1,8 @@
-
+package BrainfuckOriginal;
 
 import java.util.*;
 
-public class BrainfuckCore     //code credit: https://www.geeksforgeeks.org/brainfuck-interpreter-java/
+public class Brainfuck     //code credit: https://www.geeksforgeeks.org/brainfuck-interpreter-java/
 {
     private static Scanner ob = new Scanner(System.in);
     private static int ptr; // Data pointer
@@ -111,6 +111,6 @@ public class BrainfuckCore     //code credit: https://www.geeksforgeeks.org/brai
         }
     }
 
-    public BrainfuckCore() {}
+    public Brainfuck() {}
 
 }

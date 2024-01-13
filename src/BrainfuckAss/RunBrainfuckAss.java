@@ -1,3 +1,5 @@
+package BrainfuckAss;
+
 import java.io.*;
 import java.util.Scanner;
 
@@ -28,7 +30,7 @@ public class RunBrainfuckAss {
         } catch (Exception e) {}
         String noWhitespace = stripCodeOfWhitespace(codeOfFileStrBuilder.toString());
         BrainfuckAss._precompile(noWhitespace, "program.bfac");
-        //BrainfuckAss.interpret(noWhitespace);
+        //BrainfuckAss.BrainfuckAss.interpret(noWhitespace);
     }
 
     private static String stripCodeOfWhitespace(String input)
