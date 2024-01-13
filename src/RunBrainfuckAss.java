@@ -27,7 +27,8 @@ public class RunBrainfuckAss {
             bufferedReader.close();
         } catch (Exception e) {}
         String noWhitespace = stripCodeOfWhitespace(codeOfFileStrBuilder.toString());
-        BrainfuckAss.interpret(noWhitespace);
+        BrainfuckAss._precompile(noWhitespace, "program.bfac");
+        //BrainfuckAss.interpret(noWhitespace);
     }
 
     private static String stripCodeOfWhitespace(String input)

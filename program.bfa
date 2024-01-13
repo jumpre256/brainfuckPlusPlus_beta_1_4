@@ -1,5 +1,5 @@
 
-#example comment that uses non-reserved characters: ABC_DDE, ( ( ); END;
+#example comment that uses non-reserved characters or otherwise: ABC_DDE, ( ( ); END; 0123456789az
 
 #{target: badge makes}#
 
