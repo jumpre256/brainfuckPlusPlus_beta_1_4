@@ -182,7 +182,7 @@ public class Lexer {
                 } catch(Exception e1) {}
             } catch(Exception e0) {}
         }
-        System.out.println("Succesfully wrote to file.");
+        //Tool.Debugger.debug(this, "Succesfully wrote to file.");
     }
 
 }
