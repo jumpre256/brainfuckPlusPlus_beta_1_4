@@ -23,7 +23,7 @@ public class BrainfuckAss {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                //debug(line);
+                //Tool.debugger.debug("BrainfuckAss", line);
                 codeOfFileStrBuilder.append(line).append("\n");
             }
             bufferedReader.close();

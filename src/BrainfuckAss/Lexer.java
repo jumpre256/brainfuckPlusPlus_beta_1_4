@@ -9,112 +9,127 @@ import java.io.FileWriter;
 public class Lexer {
 
     private boolean hadError = false;
+    private int lineNumber = 1;
     private int operatorIndex = 0;
     private final String source;
 
-    public Lexer(String source){
+    public Lexer(String source) {
         this.source = source;
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public String _precompile(String outputPath)
-    {
+    public String _precompile(String outputPath) {
         //Remove fluff:
         StringBuilder strBuilder = new StringBuilder();
-        for(int i = 0; i < source.length(); i++){
+        for (int i = 0; i < source.length(); i++) {
             char c = source.charAt(i);
-            if(isReserved(c)){
+            if (isReserved(c)) {
                 strBuilder.append(c);
             }
         }
         String fluffRemoved = strBuilder.toString();
         //remove comments and newlines:
         String rawCode = "";
-        try{
+        try {
             rawCode = removeCommentsAndNewlines(fluffRemoved);
-        } catch(LexerError error) {
-            System.err.println("Lexing error: " + error.getMessage());
+        } catch (LexerError error) {
+            System.err.printf("Error: [line %d]: %s%n", error.getLineNumber(), error.getMessage());
             hadError = true;
         }
-        if(!hadError){
-            writeToFile(fluffRemoved, outputPath);  //for debug purposes.
+        if (!hadError) {
+            writeToFile(rawCode, outputPath);  //for debug purposes.
             return rawCode;
-        }
-        else return "";
+        } else return "";
     }
 
     private String removeCommentsAndNewlines(String input) throws LexerError    //not yet implemented
     {
-        return "";
-    }
-
-    @SuppressWarnings("ConstantValue")
-    private String removeCommentsAndNewlines_fail(String input) throws LexerError
-    //code for this method is a pretty huge mess, doesn't execute currently, to redo another time, coding (CON'T)
-            //[] with a different design philosophy for this method.
-    {
         StringBuilder strBuilder = new StringBuilder();
-        PrecompileState state = PrecompileState.Code;
-        while(true)
-        {
-            if(!(operatorIndex < input.length())) break;
-            char c = input.charAt(operatorIndex);
-            Tool.Debugger.debug(this, "Processing: " + c);
-            if(state == PrecompileState.Code) {
-                if (c == '#' && !lastChar()) {
-                    advance();  //consume the # character.
-                    if (match('{')) {
-                        if (state == PrecompileState.Code) state = PrecompileState.MultilineComment;
-                        else
-                            throw new LexerError("Cannot initiate a new multiline comment within an existing multiline comment.");
-                    }
-                /*else if(match('}')) {
-                    throw new LexerError("Invalid comment format.");
-                }*/
-                    else {
-                        state = PrecompileState.LineComment;
-                    /*if(match('\n')) state = PrecompileState.Code;
-                    else advance();*/
-                    }
-                } else if (c == '}' && !lastChar()) {
-                    //Tool.Debugger.debug(this, "found }");
-                    advance();
-                    if (match('#')) {
-                        //Tool.Debugger.debug(this, "found }#");
-                        if (state == PrecompileState.MultilineComment) state = PrecompileState.Code;
-                        else throw new LexerError("Unmatched multiline comment.");
-                    } else {
-                        //do nothing
-                    }
+        while (!isAtEnd()) {
+            char c = advance();
+            boolean isReserved = isReserved(c);
+            if (isReserved) {
+                if (c == '#') hash();
+                else if (c == '}') throw new LexerError(lineNumber,"Unexpected '}' character.");
+                else if (c == '\n') {
+                    lineNumber++;
+                } else {
+                    strBuilder.append(c);
                 }
             }
         }
-        return "";
+        return strBuilder.toString();
+    }
+
+
+    private void hash() throws LexerError   //handle streams of commented out text initiated with a hashtag character.
+            //inspiration for code's structure from Robert Nystrom.
+    {
+        if(match('{')){
+            //in a multiline comment.
+            while(true){
+                if(peek() == '\n') lineNumber++;
+                else if(peek() == '#' && peek(2) == '{') throw new LexerError(lineNumber,"Cannot initiate a new multiline comment within an existing multiline comment.");
+
+                else if(peek() == '}' && peek(2) == '#'){
+                    advance(); advance();
+                    break;      //break out of while loop.
+                }
+
+                if(peek() == '\0')    //this has to be an "if" not an "else if" to make sure if false, runs advance().
+                {
+                    throw new LexerError(lineNumber,"Unterminated multiline comment.");
+                } else {
+                    advance(); //eats up characters in the source code stream while appropriately updating the "operatorIndex" variable.
+                }
+            }
+        } else if(peek() == '\0') {
+            //do nothing.
+        } else {
+            //a comment goes until the end of the line.
+            while (peek() != '\n' && !isAtEnd()) advance();
+        }
     }
 
     private char peek()
     {
-        return source.charAt(operatorIndex+1);
+        if (isAtEnd()) return '\0';
+        else return source.charAt(operatorIndex);
     }
 
+    private char peek(int n)    //code credit: Robert Nystrom.
+    {
+        int current = operatorIndex;
+        int i = n - 1;
+        if (current + i >= source.length()) return '\0';
+        else return source.charAt(current + i);
+    }
+
+    //@SuppressWarnings("DataFlowIssue")
     private boolean match(char expected)
     {
-        boolean returnValue = false;
-        if(expected == source.charAt(operatorIndex)){
+        boolean returnValue;
+        if(isAtEnd()) returnValue = false;
+        else if(expected == source.charAt(operatorIndex)){
             operatorIndex++;
             returnValue = true;
+        } else{
+            returnValue = false;
         }
         return returnValue;
     }
 
-    private void advance()
+    private char advance()
     {
+        int beforeIncrement = operatorIndex;
         operatorIndex++;
+        return source.charAt(beforeIncrement);
     }
 
-    private boolean lastChar()
+
+    private boolean isAtEnd()
     {
-        return operatorIndex == (source.length() - 1);
+        return operatorIndex >= source.length();
     }
 
     private boolean isReserved(char c)
@@ -144,7 +159,7 @@ public class Lexer {
                 returnValue = true; break;
             default:
                 returnValue = ((c >= 48) && (c <= 57)) || ((c >= 97) && (c <= 122));
-                Tool.Debugger.debug("BrainfuckAss.BrainfuckAss", c + ": " + (int)c + "\n", ' ');
+                //Tool.Debugger.debug(this, c + ": " + (int)c + "\n", ' ');
                 break;
 
         }
@@ -170,7 +185,4 @@ public class Lexer {
         System.out.println("Succesfully wrote to file.");
     }
 
-    private enum PrecompileState {
-        Code, LineComment, MultilineComment
-    }
 }

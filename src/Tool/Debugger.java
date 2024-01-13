@@ -11,9 +11,9 @@ public class Debugger {
         debug(caller, message, '\n');
     }
 
-    public static void debug(Object caller, Object message, char lineEnder)
+    public static void debug(Object caller, Object message, char lineEnder) //root method.
     {
-        //System.out.print(caller + ": " + message + lineEnder);
-        System.out.print(message.toString() + lineEnder);
+        System.out.print(caller + ": " + message + lineEnder);
+        //System.out.print(message.toString() + lineEnder);
     }
 }
