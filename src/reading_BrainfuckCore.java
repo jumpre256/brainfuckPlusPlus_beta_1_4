@@ -32,7 +32,7 @@ class reading_BrainfuckCore     //code credit: https://www.geeksforgeeks.org/bra
             // eight instructions. In this loop we check
             // and execute all those eight instructions
 
-            Debugger.debug("reading_BrainfuckCore",
+            /*Debugger.debug("reading_BrainfuckCore",
                     "Executing: " + input.charAt(operatorIndex));
 
             Debugger.debug("reading_BrainfuckCore",
@@ -40,7 +40,7 @@ class reading_BrainfuckCore     //code credit: https://www.geeksforgeeks.org/bra
                     + "\toperatorIndex: " + operatorIndex);
 
             Debugger.debug("reading_BrainfuckCore",
-                    "LOOPBOTTOM:");
+                    "LOOPBOTTOM:");*/
 
             // > moves the pointer to the right
             if (input.charAt(operatorIndex) == '>')
@@ -98,9 +98,9 @@ class reading_BrainfuckCore     //code credit: https://www.geeksforgeeks.org/bra
                             loopDepth--;
                         operatorIndex++;
 
-                        Debugger.debug("reading_BrainfuckCore",
+                        /*Debugger.debug("reading_BrainfuckCore",
                                 "\tloopDepth: " + loopDepth + "\n"
-                                        + "\toperatorIndex: " + operatorIndex);
+                                        + "\toperatorIndex: " + operatorIndex);*/
                     }
                 }
             }
@@ -120,9 +120,9 @@ class reading_BrainfuckCore     //code credit: https://www.geeksforgeeks.org/bra
                             loopDepth--;
                         operatorIndex--;
 
-                        Debugger.debug("reading_BrainfuckCore",
+                        /*Debugger.debug("reading_BrainfuckCore",
                                 "\tloopDepth: " + loopDepth + "\n"
-                                        + "\toperatorIndex: " + operatorIndex);
+                                        + "\toperatorIndex: " + operatorIndex);*/
                     }
                 }
             }
