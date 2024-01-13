@@ -29,10 +29,23 @@ public class Main {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 //debug(line);
-                codeOfFileStrBuilder.append(line).append("\n");
+                //codeOfFileStrBuilder.append(line).append("\n");
+                codeOfFileStrBuilder.append(line);
             }
             bufferedReader.close();
         } catch (Exception e) {}
-        brainfuckCore.interpret(codeOfFileStrBuilder.toString());
+        brainfuckCore.interpret(stripCodeOfWhitespace(codeOfFileStrBuilder.toString()));
+    }
+
+    private static String stripCodeOfWhitespace(String input)
+    {
+        StringBuilder strBuilder = new StringBuilder();
+        for(int i = 0; i < input.length(); i++){
+            char c = input.charAt(i);
+            if(c != ' ' && c != '\n' && c != '\r' && c != '\t'){
+                strBuilder.append(c);
+            }
+        }
+        return strBuilder.toString();
     }
 }

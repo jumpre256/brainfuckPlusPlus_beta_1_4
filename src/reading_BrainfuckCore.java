@@ -20,7 +20,7 @@ class reading_BrainfuckCore     //code credit: https://www.geeksforgeeks.org/bra
     // a string parameter
     public static void interpret(String input)
     {
-        int c = 0;
+        int loopDepth = 0;
 
         // Parsing through each character of the code
         int operatorIndex = 0;
@@ -32,6 +32,15 @@ class reading_BrainfuckCore     //code credit: https://www.geeksforgeeks.org/bra
             // eight instructions. In this loop we check
             // and execute all those eight instructions
 
+            Debugger.debug("reading_BrainfuckCore",
+                    "Executing: " + input.charAt(operatorIndex));
+
+            Debugger.debug("reading_BrainfuckCore",
+                    "LOOPTOP:\n\tloopDepth: " + loopDepth + "\n"
+                    + "\toperatorIndex: " + operatorIndex);
+
+            Debugger.debug("reading_BrainfuckCore",
+                    "LOOPBOTTOM:");
 
             // > moves the pointer to the right
             if (input.charAt(operatorIndex) == '>')
@@ -81,13 +90,17 @@ class reading_BrainfuckCore     //code credit: https://www.geeksforgeeks.org/bra
                 if (memory[ptr] == 0)
                 {
                     operatorIndex++;
-                    while (c > 0 || input.charAt(operatorIndex) != ']')
+                    while (loopDepth > 0 || input.charAt(operatorIndex) != ']')
                     {
                         if (input.charAt(operatorIndex) == '[')
-                            c++;
+                            loopDepth++;
                         else if (input.charAt(operatorIndex) == ']')
-                            c--;
+                            loopDepth--;
                         operatorIndex++;
+
+                        Debugger.debug("reading_BrainfuckCore",
+                                "\tloopDepth: " + loopDepth + "\n"
+                                        + "\toperatorIndex: " + operatorIndex);
                     }
                 }
             }
@@ -99,13 +112,17 @@ class reading_BrainfuckCore     //code credit: https://www.geeksforgeeks.org/bra
                 if (memory[ptr] != 0)
                 {
                     operatorIndex --;
-                    while (c > 0 || input.charAt(operatorIndex) != '[')
+                    while (loopDepth > 0 || input.charAt(operatorIndex) != '[')
                     {
                         if (input.charAt(operatorIndex) == ']')
-                            c++;
+                            loopDepth++;
                         else if (input.charAt(operatorIndex) == '[')
-                            c--;
+                            loopDepth--;
                         operatorIndex--;
+
+                        Debugger.debug("reading_BrainfuckCore",
+                                "\tloopDepth: " + loopDepth + "\n"
+                                        + "\toperatorIndex: " + operatorIndex);
                     }
                 }
             }
