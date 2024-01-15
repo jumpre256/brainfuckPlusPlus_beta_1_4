@@ -21,5 +21,10 @@ public class Stack {
         }
     }
 
+    public void debug_print_stack()
+    {
+        System.out.println(stackContents);
+    }
+
 
 }

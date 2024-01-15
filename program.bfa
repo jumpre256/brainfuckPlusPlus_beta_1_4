@@ -4,7 +4,8 @@
 
 :a #print out the result at the end.
 .>.>.>.>.>.>.>.>.>.>.>
-|c
+$
+#|c
 
 :
 
@@ -70,8 +71,8 @@
 <<<<<<<<<<
 
 #print out the result:
-|a
+;a
 
 :c
 
-;h      #to demonstrate my assembler is able to process to handle METHOD_CALL operators in the code.
+#|h      #to demonstrate my assembler is able to process to handle METHOD_CALL operators in the code.

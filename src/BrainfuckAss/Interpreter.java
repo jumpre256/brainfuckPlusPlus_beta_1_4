@@ -12,6 +12,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
     private static int length = 65535;
     // Array of byte type simulating memory of max 65535 bits. Goes from 0 to 65534.
     private static byte[] memory = new byte[length];
+    private static final Stack callStack = new Stack();
     private static int loopDepth = 0;
     private static int operatorIndex = 0; // Parsing through each character of the code
     private static final Map<Character, Integer> locatorMap = new HashMap<>();
@@ -38,6 +39,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
             if (operators.get(operatorIndex).type == OperatorType.EOF) break;
             // BrainFuck is a small language with only eight instructions. In this loop we check and execute each of those eight instructions
 
+            //callStack.debug_print_stack();
             //debugInterpretTop(operators)
 
             // > moves the pointer to the right
@@ -93,8 +95,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                 }
             }
 
-            // ] jumps back to the matching [ if the
-            // cell under the pointer is nonzero
+            // ] jumps back to the matching [ if the cell under the pointer is nonzero
             else if (operators.get(operatorIndex).type == OperatorType.LOOP_CLOSE) {
                 if (memory[ptr] != 0) {
                     operatorIndex--;
@@ -115,6 +116,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
             {
                 Operator currentOperator = operators.get(operatorIndex);
                 int previousPartOfCodeExecutedIndex = operatorIndex;
+                callStack.push(previousPartOfCodeExecutedIndex);        //so when RET is hit, returns to the next instruction after the call is made.
                 operatorIndex = locatorMap.get((char)currentOperator.literal);
             }
 
@@ -124,6 +126,23 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
             {
                 Operator currentOperator = operators.get(operatorIndex);
                 operatorIndex = locatorMap.get((char)currentOperator.literal);
+            }
+
+            else if(operators.get(operatorIndex).type == OperatorType.RET)
+            {
+                int returnAddress = -2;     //incorrect, but will be set to correct or the program will system.exit if error.
+                try{
+                    returnAddress = callStack.pop();
+                } catch(RuntimeError e){
+                    Operator operator = e.getOperator();
+                    if (operator.type == OperatorType.EOF) {
+                        System.err.printf("Error: [line %d]: at end: %s%n", operator.line, e.getMessage());
+                    } else {
+                        System.err.printf("Error: [line %d]: %s%n", operator.line, e.getMessage());
+                    }
+                    System.exit(-1);
+                }
+                operatorIndex = returnAddress;
             }
 
             operatorIndex++;
