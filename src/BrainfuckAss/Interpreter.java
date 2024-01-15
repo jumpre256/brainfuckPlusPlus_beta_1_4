@@ -161,11 +161,14 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
         }
     }
 
-    private static void fillOutLocatorMap(List<Operator> operators)
+    private static void fillOutLocatorMap(List<Operator> operators) //for now SET_LOCATOR_Z works the same (CON'T)
+        //[] as SET_LOCATOR, I think this is for the best and is probably the correct final solution too.
     {
-        for(Operator op : operators){
-            if(op.type == OperatorType.SET_LOCATOR){
-                locatorMap.put((int)op.literal, op.operatorIndex);
+        for (Operator op : operators) {
+            if (op.type == OperatorType.SET_LOCATOR || op.type == OperatorType.SET_LOCATOR_Z)    //for now SET_LOCATOR_Z works the same (CON'T)
+                //[] as SET_LOCATOR, I think this is for the best and is probably the correct final solution too.
+            {
+                locatorMap.put((int) op.literal, op.operatorIndex);
             }
         }
     }

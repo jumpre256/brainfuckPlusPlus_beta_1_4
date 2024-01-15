@@ -151,7 +151,7 @@ public class Assembler extends AssemblerOperations{
             addOperator(OperatorType.SET_LOCATOR, ((int)nextChar) - 96);
         } else if (nextChar == 122) {
             int locatorKey = z_moment();
-            addOperator(OperatorType.SET_LOCATOR, locatorKey+26);
+            addOperator(OperatorType.SET_LOCATOR_Z, locatorKey+26);
         } else if(nextChar == '\0') {
             //do nothing.
          } else {
@@ -170,7 +170,7 @@ public class Assembler extends AssemblerOperations{
             addOperator(OperatorType.METHOD_CALL, ((int)nextChar) - 96);
         } else if (nextChar == 122) {
             int locatorKey = z_moment();
-            addOperator(OperatorType.METHOD_CALL, locatorKey+26);
+            addOperator(OperatorType.CALL_Z, locatorKey+26);
         } else if(nextChar == '\0') {
             //do nothing.
         } else {
@@ -189,7 +189,7 @@ public class Assembler extends AssemblerOperations{
             addOperator(OperatorType.BRA, ((int)nextChar) - 96);
         } else if (nextChar == 122) {
             int locatorKey = z_moment();
-            addOperator(OperatorType.BRA, locatorKey+26);
+            addOperator(OperatorType.CALL_Z, locatorKey+26);
         } else if(nextChar == '\0') {
             //do nothing.
         } else {
