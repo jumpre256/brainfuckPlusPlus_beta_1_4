@@ -38,6 +38,17 @@ public class Repl {
         return strBuilder.toString();
     }
 
+    public static void runtimeError(RuntimeError error)
+    {
+        Operator operator = error.getOperator();
+        if (operator.type == OperatorType.EOF) {
+            System.err.printf("%nError: [line %d]: at end: %s%n", operator.line, error.getMessage());
+        } else {
+            System.err.printf("%nError: [line %d]: %s%n", operator.line, error.getMessage());
+        }
+        //System.exit(-1);  //no need to do this anymore I'm pretty certain.
+    }
+
     private static String loadFile(String filePath)
     {
         File file = new File(filePath);

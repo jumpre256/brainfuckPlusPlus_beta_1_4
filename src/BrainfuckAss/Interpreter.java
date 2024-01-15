@@ -24,7 +24,11 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
         //to-do: rename the method of the code on the next line of code.
         fillOutLocatorMap(operators); //horrible method name because intox but this is fine for now.
         //Tool.Debugger.debug("Interpreter", locatorMap);
-        fullInterpret(operators);
+        try {
+            fullInterpret(operators);
+        } catch(RuntimeError error) {
+            Repl.runtimeError(error);
+        }
         //lazyInterpret(input);
     }
 
@@ -32,7 +36,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
         BrainfuckOriginal.BrainfuckEngine.interpret(input);
     }
 
-    @SuppressWarnings("DataFlowIssue")
+    @SuppressWarnings({"DataFlowIssue", "UnnecessaryLocalVariable"})
     public static void fullInterpret(List<Operator> operators) {
         //for (int i = 0; i < s.length(); i++)
         while (true) {
@@ -117,31 +121,28 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                 Operator currentOperator = operators.get(operatorIndex);
                 int previousPartOfCodeExecutedIndex = operatorIndex;
                 callStack.push(previousPartOfCodeExecutedIndex);        //so when RET is hit, returns to the next instruction after the call is made.
-                operatorIndex = locatorMap.get((char)currentOperator.literal);
+                if(locatorMap.get((char) currentOperator.literal) != null){
+                    operatorIndex = locatorMap.get((char) currentOperator.literal);
+                } else {
+                    throw new RuntimeError(currentOperator, "Tried to call method at locator that does not exist.");
+                }
             }
-
 
             //For the BRA operator, of symbol: "|a"
             else if(operators.get(operatorIndex).type == OperatorType.BRA)
             {
                 Operator currentOperator = operators.get(operatorIndex);
-                operatorIndex = locatorMap.get((char)currentOperator.literal);
+                if(locatorMap.get((char) currentOperator.literal) != null){
+                    operatorIndex = locatorMap.get((char) currentOperator.literal);
+                } else {
+                    throw new RuntimeError(currentOperator, "Tried to jump to a locator that does not exist.");
+                }
             }
 
             else if(operators.get(operatorIndex).type == OperatorType.RET)
             {
-                int returnAddress = -2;     //incorrect, but will be set to correct or the program will system.exit if error.
-                try{
-                    returnAddress = callStack.pop();
-                } catch(RuntimeError e){
-                    Operator operator = e.getOperator();
-                    if (operator.type == OperatorType.EOF) {
-                        System.err.printf("Error: [line %d]: at end: %s%n", operator.line, e.getMessage());
-                    } else {
-                        System.err.printf("Error: [line %d]: %s%n", operator.line, e.getMessage());
-                    }
-                    System.exit(-1);
-                }
+                //Tool.Debugger.debug("Interpreter", "tried to evaluate a RET operator.");
+                int returnAddress = callStack.pop();
                 operatorIndex = returnAddress;
             }
 

@@ -75,4 +75,5 @@ $
 
 :c
 
-#|h      #to demonstrate my assembler is able to process to handle METHOD_CALL operators in the code.
+#|h      #error handling for jumping to locators that do not exist.
+#;h      #error handling test.
