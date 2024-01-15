@@ -16,8 +16,10 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
     private static int operatorIndex = 0; // Parsing through each character of the code
     private static final Map<Character, Integer> locatorMap = new HashMap<>();
     private static int activeVault = 0; //activeVault stores 0 at the start of the program.
+    private static List<Operator> operators = null;
 
     public static void interpret(List<Operator> operators) {
+        Interpreter.operators = operators;
         //to-do: rename the method of the code on the next line of code.
         fillOutLocatorMap(operators); //horrible method name because intox but this is fine for now.
         //Tool.Debugger.debug("Interpreter", locatorMap);
@@ -112,6 +114,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
             else if(operators.get(operatorIndex).type == OperatorType.METHOD_CALL)
             {
                 Operator currentOperator = operators.get(operatorIndex);
+                int previousPartOfCodeExecutedIndex = operatorIndex;
                 operatorIndex = locatorMap.get((char)currentOperator.literal);
             }
 
@@ -134,6 +137,11 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                 locatorMap.put((char)op.literal, op.operatorIndex);
             }
         }
+    }
+
+    public static Operator getCurrentOperator()
+    {
+        return operators.get(operatorIndex);
     }
 
     private static void debugInterpretTop(List<Operator> operators)
