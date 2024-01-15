@@ -27,3 +27,8 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### jump's additions to the gitignore file ###
+*.bf
+*.bfa
+*.bfac
