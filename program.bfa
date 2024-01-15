@@ -77,12 +77,8 @@ $
 
 :c
 
-|h
 
-#|h      #error handling for jumping to locators that do not exist.
-#;h      #error handling test.
+?
 
 :z5
 $
-
-:h

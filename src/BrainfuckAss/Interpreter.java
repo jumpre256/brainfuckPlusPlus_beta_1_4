@@ -40,12 +40,11 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
         //for (int i = 0; i < s.length(); i++)
         while (true) {
             if (operators.get(operatorIndex).type == OperatorType.EOF) break;
-            // BrainFuck is a small language with only eight instructions. In this loop we check and execute each of those eight instructions
 
             //callStack.debug_print_stack();
             //debugInterpretTop(operators)
 
-            // > moves the pointer to the right
+            // RIGHT moves the pointer to the right
             if (operators.get(operatorIndex).type == OperatorType.RIGHT) {
                 if (ptr == length - 1) //If memory is full
                     ptr = 0; //pointer is returned to zero
@@ -53,7 +52,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                     ptr++;
             }
 
-            // < moves the pointer to the left
+            // LEFT moves the pointer to the left
             else if (operators.get(operatorIndex).type == OperatorType.LEFT) {
                 if (ptr == 0) // If the pointer tries to go left past zero for now I have decided the pointer is returned to index 0.
                     ptr = 0;
@@ -61,11 +60,10 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                     ptr--;
             }
 
-            // ADD increments the value of the memory cell under the pointer
-            else if (operators.get(operatorIndex).type == OperatorType.ADD)
+            else if (operators.get(operatorIndex).type == OperatorType.ADD) {
                 memory[ptr]++;
+            }
 
-                // MINUS decrements the value of the memory cell under the pointer
             else if (operators.get(operatorIndex).type == OperatorType.MINUS) {
                 memory[ptr]--;
             }
@@ -80,8 +78,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                 memory[ptr] = (byte) (ob.next().charAt(0));
             }
 
-                // [ jumps past the matching ] if the cell
-                // under the pointer is 0
+                // LOOP_OPEN jumps past the matching LOOP_CLOSE if the cell under the pointer is 0
             else if (operators.get(operatorIndex).type == OperatorType.LOOP_OPEN) {
                 if (memory[ptr] == 0) {
                     operatorIndex++;
@@ -97,7 +94,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                 }
             }
 
-            // ] jumps back to the matching [ if the cell under the pointer is nonzero
+            // LOOP_CLOSE jumps back to the matching LOOP_OPEN if the cell under the pointer is nonzero
             else if (operators.get(operatorIndex).type == OperatorType.LOOP_CLOSE) {
                 if (memory[ptr] != 0) {
                     operatorIndex--;
@@ -145,16 +142,19 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                 operatorIndex = returnAddress;
             }
 
-            //For the SET_AV operator, of symbol: "^"
             else if(operators.get(operatorIndex).type == OperatorType.SET_AV)
             {
                 activeVault = memory[ptr];
             }
 
-            //For the STAR operator, of symbol: "*"
             else if(operators.get(operatorIndex).type == OperatorType.STAR)
             {
                 memory[ptr] = activeVault;
+            }
+
+            else if(operators.get(operatorIndex).type == OperatorType.DEBUG_INSTANT_SAFE_QUIT)
+            {
+                break;
             }
 
             operatorIndex++;

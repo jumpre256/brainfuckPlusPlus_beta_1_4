@@ -87,6 +87,8 @@ public class Assembler extends AssemblerOperations{
                     addOperator(OperatorType.BANG); break;
                 case '#':
                     hash(); break;
+                case '?':
+                    addOperator(OperatorType.DEBUG_INSTANT_SAFE_QUIT); break;
                 case '\n':
                     lineNumber++; break;
                 case '{':
