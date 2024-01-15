@@ -29,7 +29,7 @@ public class Assembler extends AssemblerOperations{
         //convert to a list of operators:
         List<Operator> operators = null;
         try {
-            operators = doLexMain(fluffRemoved);
+            operators = doAssembleMain(fluffRemoved);
             operators.add(new Operator(OperatorType.EOF, null, lineNumber, operatorIndex));
         } catch (AssemblerError error) {
             System.err.printf("Error: [line %d]: %s%n", error.getLineNumber(), error.getMessage());
@@ -44,7 +44,7 @@ public class Assembler extends AssemblerOperations{
     }
 
     @SuppressWarnings("ConstantValue")
-    private List<Operator> doLexMain(String input) throws AssemblerError
+    private List<Operator> doAssembleMain(String input) throws AssemblerError
     {
         while (!isAtEnd()) {
             char c = advance();
@@ -124,16 +124,15 @@ public class Assembler extends AssemblerOperations{
         return strBuilder.toString();
     }
 
-
     private void set_locator() throws AssemblerError
     {
         char nextChar = advance();
         while(nextChar == '\n'){
             nextChar = advance();
         }
-        boolean isValidLocator = (nextChar >= 97) && (nextChar <= 122);
+        boolean isValidLocator = (nextChar >= 97) && (nextChar <= 121); //is a to y
         if(isValidLocator){
-            addOperator(OperatorType.SET_LOCATOR, nextChar);
+            addOperator(OperatorType.SET_LOCATOR, ((int)nextChar) - 96);
         } else if(nextChar == '\0') {
             //do nothing.
          } else {
@@ -149,7 +148,7 @@ public class Assembler extends AssemblerOperations{
         }
         boolean isValidLocator = (nextChar >= 97) && (nextChar <= 122);
         if(isValidLocator){
-            addOperator(OperatorType.METHOD_CALL, nextChar);
+            addOperator(OperatorType.METHOD_CALL, ((int)nextChar) - 96);
         } else if(nextChar == '\0') {
             //do nothing.
         } else {
@@ -165,7 +164,7 @@ public class Assembler extends AssemblerOperations{
         }
         boolean isValidLocator = (nextChar >= 97) && (nextChar <= 122);
         if(isValidLocator){
-            addOperator(OperatorType.BRA, nextChar);
+            addOperator(OperatorType.BRA, ((int)nextChar) - 96);
         } else if(nextChar == '\0') {
             //do nothing.
         } else {

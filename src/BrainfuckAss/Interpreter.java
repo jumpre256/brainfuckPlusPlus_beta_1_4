@@ -15,14 +15,13 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
     private static final Stack callStack = new Stack();
     private static int loopDepth = 0;
     private static int operatorIndex = 0; // Parsing through each character of the code
-    private static final Map<Character, Integer> locatorMap = new HashMap<>();
-    private static int activeVault = 0; //activeVault stores 0 at the start of the program.
-    private static List<Operator> operators = null;
+    private static final Map<Integer, Integer> locatorMap = new HashMap<>();
+    private static byte activeVault = 0; //activeVault stores 0 at the start of the program.
+    private static List<Operator> operators;
 
     public static void interpret(List<Operator> operators) {
         Interpreter.operators = operators;
-        //to-do: rename the method of the code on the next line of code.
-        fillOutLocatorMap(operators); //horrible method name because intox but this is fine for now.
+        fillOutLocatorMap(operators); //decided what may be called "indicators" are officially called "locators"
         //Tool.Debugger.debug("Interpreter", locatorMap);
         try {
             fullInterpret(operators);
@@ -62,25 +61,24 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                     ptr--;
             }
 
-            // + increments the value of the memory
-            // cell under the pointer
+            // ADD increments the value of the memory cell under the pointer
             else if (operators.get(operatorIndex).type == OperatorType.ADD)
                 memory[ptr]++;
 
-                // - decrements the value of the memory cell
-                // under the pointer
-            else if (operators.get(operatorIndex).type == OperatorType.MINUS)
+                // MINUS decrements the value of the memory cell under the pointer
+            else if (operators.get(operatorIndex).type == OperatorType.MINUS) {
                 memory[ptr]--;
+            }
 
-                // . outputs the character signified by the
-                // cell at the pointer
-            else if (operators.get(operatorIndex).type == OperatorType.DOT)
+                // DOT outputs the character signified by the cell at the pointer
+            else if (operators.get(operatorIndex).type == OperatorType.DOT) {
                 System.out.print((char) (memory[ptr]));
+            }
 
-                // , inputs a character and store it in the
-                // cell at the pointer
-            else if (operators.get(operatorIndex).type == OperatorType.COMMA)
+                // COMMA inputs a character and stores it in the cell at the pointer
+            else if (operators.get(operatorIndex).type == OperatorType.COMMA) {
                 memory[ptr] = (byte) (ob.next().charAt(0));
+            }
 
                 // [ jumps past the matching ] if the cell
                 // under the pointer is 0
@@ -121,8 +119,8 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                 Operator currentOperator = operators.get(operatorIndex);
                 int previousPartOfCodeExecutedIndex = operatorIndex;
                 callStack.push(previousPartOfCodeExecutedIndex);        //so when RET is hit, returns to the next instruction after the call is made.
-                if(locatorMap.get((char) currentOperator.literal) != null){
-                    operatorIndex = locatorMap.get((char) currentOperator.literal);
+                if(locatorMap.containsKey((int)currentOperator.literal)){
+                    operatorIndex = locatorMap.get((int)currentOperator.literal);
                 } else {
                     throw new RuntimeError(currentOperator, "Tried to call method at locator that does not exist.");
                 }
@@ -132,18 +130,31 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
             else if(operators.get(operatorIndex).type == OperatorType.BRA)
             {
                 Operator currentOperator = operators.get(operatorIndex);
-                if(locatorMap.get((char) currentOperator.literal) != null){
-                    operatorIndex = locatorMap.get((char) currentOperator.literal);
+                if(locatorMap.containsKey((int)currentOperator.literal)){
+                    operatorIndex = locatorMap.get((int)currentOperator.literal);
                 } else {
                     throw new RuntimeError(currentOperator, "Tried to jump to a locator that does not exist.");
                 }
             }
 
+            //For the RET operator, of symbol: "$"
             else if(operators.get(operatorIndex).type == OperatorType.RET)
             {
                 //Tool.Debugger.debug("Interpreter", "tried to evaluate a RET operator.");
                 int returnAddress = callStack.pop();
                 operatorIndex = returnAddress;
+            }
+
+            //For the SET_AV operator, of symbol: "^"
+            else if(operators.get(operatorIndex).type == OperatorType.SET_AV)
+            {
+                activeVault = memory[ptr];
+            }
+
+            //For the STAR operator, of symbol: "*"
+            else if(operators.get(operatorIndex).type == OperatorType.STAR)
+            {
+                memory[ptr] = activeVault;
             }
 
             operatorIndex++;
@@ -154,7 +165,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
     {
         for(Operator op : operators){
             if(op.type == OperatorType.SET_LOCATOR){
-                locatorMap.put((char)op.literal, op.operatorIndex);
+                locatorMap.put((int)op.literal, op.operatorIndex);
             }
         }
     }
