@@ -4,19 +4,21 @@ import java.util.Map; import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
-@SuppressWarnings({"CatchMayIgnoreException", "RedundantSuppression"})
+@SuppressWarnings({"CatchMayIgnoreException", "RedundantSuppression", "FieldMayBeFinal"})
 public class Interpreter   //Interpreter to the brainfuckAss language.
 {
     private static Scanner ob = new Scanner(System.in);
     private static int ptr; // Data pointer
     private static int length = 65535;
     // Array of byte type simulating memory of max 65535 bits. Goes from 0 to 65534.
-    private static byte memory[] = new byte[length];
+    private static byte[] memory = new byte[length];
     private static int loopDepth = 0;
     private static int operatorIndex = 0; // Parsing through each character of the code
     private static final Map<Character, Integer> locatorMap = new HashMap<>();
+    private static int activeVault = 0; //activeVault stores 0 at the start of the program.
 
     public static void interpret(List<Operator> operators) {
+        //to-do: rename the method of the code on the next line of code.
         fillOutLocatorMap(operators); //horrible method name because intox but this is fine for now.
         //Tool.Debugger.debug("Interpreter", locatorMap);
         fullInterpret(operators);
@@ -34,13 +36,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
             if (operators.get(operatorIndex).type == OperatorType.EOF) break;
             // BrainFuck is a small language with only eight instructions. In this loop we check and execute each of those eight instructions
 
-            /*Tool.Debugger.debug("Interpreter",
-                    "Executing: " + input.charAt(operatorIndex));
-            Tool.Debugger.debug("Interpreter",
-                    "LOOPTOP:\n\t" + "loopDepth: " + loopDepth + "\n"
-                    + "\t" + "operatorIndex: " + operatorIndex);
-            Tool.Debugger.debug("Interpreter",
-                    "LOOPBOTTOM:");*/
+            //debugInterpretTop(operators)
 
             // > moves the pointer to the right
             if (operators.get(operatorIndex).type == OperatorType.RIGHT) {
@@ -112,6 +108,15 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                 }
             }
 
+            //For the METHOD_CALL operator, of symbol: ";a"
+            else if(operators.get(operatorIndex).type == OperatorType.METHOD_CALL)
+            {
+                Operator currentOperator = operators.get(operatorIndex);
+                operatorIndex = locatorMap.get((char)currentOperator.literal);
+            }
+
+
+            //For the BRA operator, of symbol: "|a"
             else if(operators.get(operatorIndex).type == OperatorType.BRA)
             {
                 Operator currentOperator = operators.get(operatorIndex);
@@ -129,6 +134,17 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
                 locatorMap.put((char)op.literal, op.operatorIndex);
             }
         }
+    }
+
+    private static void debugInterpretTop(List<Operator> operators)
+    {
+        Tool.Debugger.debug("Interpreter",
+                "Executing: " + operators.get(operatorIndex));
+        Tool.Debugger.debug("Interpreter",
+                "LOOPTOP:\n\t" + "loopDepth: " + loopDepth + "\n"
+                        + "\t" + "operatorIndex: " + operatorIndex);
+        Tool.Debugger.debug("Interpreter",
+                "LOOPBOTTOM:");
     }
 
     private static void debugAttributesDisplay()

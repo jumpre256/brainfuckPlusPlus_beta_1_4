@@ -6,7 +6,9 @@
 .>.>.>.>.>.>.>.>.>.>.>
 |c
 
-:b
+:
+
+    b       #weird way to layout code for this language, but this code is allowed by the language's grammar rules.
 
 >>>>>>>>>> #start from pointer on cell 10 to fill in cells 11 to index 1 inclusive
 
@@ -71,3 +73,5 @@
 |a
 
 :c
+
+;h      #to demonstrate my assembler is able to process to handle METHOD_CALL operators in the code.

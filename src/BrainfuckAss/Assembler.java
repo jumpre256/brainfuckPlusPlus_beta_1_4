@@ -7,18 +7,12 @@ import java.io.FileWriter;
 import java.util.List; import java.util.ArrayList;
 
 @SuppressWarnings({"RedundantSuppression", "StatementWithEmptyBody"})
-public class Lexer {
+public class Assembler extends AssemblerOperations{
 
     private boolean hadError = false;
-    private int lineNumber = 1;
-    private int current = 0;
-    private int operatorIndex = 0;
-    private final String source;
-    @SuppressWarnings("FieldMayBeFinal")
-    private List<Operator> operators = new ArrayList<>();
 
-    public Lexer(String source) {
-        this.source = source;
+    public Assembler(String source) {
+        super(source);
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -37,7 +31,7 @@ public class Lexer {
         try {
             operators = doLexMain(fluffRemoved);
             operators.add(new Operator(OperatorType.EOF, null, lineNumber, operatorIndex));
-        } catch (LexerError error) {
+        } catch (AssemblerError error) {
             System.err.printf("Error: [line %d]: %s%n", error.getLineNumber(), error.getMessage());
             hadError = true;
         }
@@ -50,7 +44,7 @@ public class Lexer {
     }
 
     @SuppressWarnings("ConstantValue")
-    private List<Operator> doLexMain(String input) throws LexerError
+    private List<Operator> doLexMain(String input) throws AssemblerError
     {
         while (!isAtEnd()) {
             char c = advance();
@@ -59,7 +53,6 @@ public class Lexer {
             switch(c) {
                 case '[':
                     addOperator(OperatorType.LOOP_OPEN); break;
-
                 case ']':
                     addOperator(OperatorType.LOOP_CLOSE); break;
                 case '+':
@@ -81,23 +74,30 @@ public class Lexer {
                 case '|':
                     bra(); break;
                 case '*':
+                    addOperator(OperatorType.STAR); break;
                 case '^':
+                    addOperator(OperatorType.SET_AV); break;
                 case '$':
                     addOperator(OperatorType.RET); break;
                 case '@':
+                    addOperator(OperatorType.AT_SYMBOL); break;
                 case '"':
+                    addOperator(OperatorType.DOUBLE_QUOTE); break;
                 case '!':
-                    addOperator(OperatorType.OTHER); break;
+                    addOperator(OperatorType.BANG); break;
                 case '#':
                     hash(); break;
                 case '\n':
                     lineNumber++; break;
                 case '{':
-                case '}':
-                    break;
+                case '}':   //'{' and '}' characters on their own are ignored for now.
+                    break;      //TODO: more rigorously evaluate in the case of this situation.
                 default:
                     boolean isReserved = ((c >= 48) && (c <= 57)) || ((c >= 97) && (c <= 122));
-                    if(isReserved) addOperator(OperatorType.OTHER);
+                    if(isReserved){
+                        //I think it is best for now if unexpect char characters found in source are treated as a comment for now.
+                        //addOperator(OperatorType.STRING_LITERAL_CHAR);
+                    }
                     break;
             }
 
@@ -105,7 +105,7 @@ public class Lexer {
         return operators;
     }
 
-    private String _removeCommentsAndWhitespace(String input) throws LexerError
+    private String _removeCommentsAndWhitespace(String input) throws AssemblerError
     {
         StringBuilder strBuilder = new StringBuilder();
         while (!isAtEnd()) {
@@ -113,7 +113,7 @@ public class Lexer {
             boolean isReserved = isReserved(c);
             if (isReserved) {
                 if (c == '#') hash();
-                else if (c == '}') throw new LexerError(lineNumber,"Unexpected '}' character.");
+                else if (c == '}') throw new AssemblerError(lineNumber,"Unexpected '}' character.");
                 else if (c == '\n') {
                     lineNumber++;
                 } else {
@@ -125,45 +125,62 @@ public class Lexer {
     }
 
 
-    private void set_locator() throws LexerError
+    private void set_locator() throws AssemblerError
     {
         char nextChar = advance();
+        while(nextChar == '\n'){
+            nextChar = advance();
+        }
         boolean isValidLocator = (nextChar >= 97) && (nextChar <= 122);
         if(isValidLocator){
             addOperator(OperatorType.SET_LOCATOR, nextChar);
         } else if(nextChar == '\0') {
             //do nothing.
          } else {
-            throw new LexerError(lineNumber, "a ':' character must be followed by an 'a' to 'z' character.");
+            throw new AssemblerError(lineNumber, "a ':' character must be followed by an 'a' to 'z' character.");
          }
     }
 
-    private void method_call()
-    {
-
-    }
-
-    private void bra() throws LexerError
+    private void method_call() throws AssemblerError
     {
         char nextChar = advance();
+        while(nextChar == '\n'){
+            nextChar = advance();
+        }
+        boolean isValidLocator = (nextChar >= 97) && (nextChar <= 122);
+        if(isValidLocator){
+            addOperator(OperatorType.METHOD_CALL, nextChar);
+        } else if(nextChar == '\0') {
+            //do nothing.
+        } else {
+            throw new AssemblerError(lineNumber, "a ';' character must be followed by an 'a' to 'z' character.");
+        }
+    }
+
+    private void bra() throws AssemblerError
+    {
+        char nextChar = advance();
+        while(nextChar == '\n'){
+            nextChar = advance();
+        }
         boolean isValidLocator = (nextChar >= 97) && (nextChar <= 122);
         if(isValidLocator){
             addOperator(OperatorType.BRA, nextChar);
         } else if(nextChar == '\0') {
             //do nothing.
         } else {
-            throw new LexerError(lineNumber, "a '|' character must be followed by an 'a' to 'z' character.");
+            throw new AssemblerError(lineNumber, "a '|' character must be followed by an 'a' to 'z' character.");
         }
     }
 
-    private void hash() throws LexerError   //handle streams of commented out text initiated with a hashtag character.
+    private void hash() throws AssemblerError   //handle streams of commented out text initiated with a hashtag character.
             //inspiration for code's structure from Robert Nystrom.
     {
         if(match('{')){
             //in a multiline comment.
             while(true){
                 if(peek() == '\n') lineNumber++;
-                else if(peek() == '#' && peek(2) == '{') throw new LexerError(lineNumber,"Cannot initiate a new multiline comment within an existing multiline comment.");
+                else if(peek() == '#' && peek(2) == '{') throw new AssemblerError(lineNumber,"Cannot initiate a new multiline comment within an existing multiline comment.");
 
                 else if(peek() == '}' && peek(2) == '#'){
                     advance(); advance();
@@ -172,7 +189,7 @@ public class Lexer {
 
                 if(peek() == '\0')    //this has to be an "if" not an "else if" to make sure if false, runs advance().
                 {
-                    throw new LexerError(lineNumber,"Unterminated multiline comment.");
+                    throw new AssemblerError(lineNumber,"Unterminated multiline comment.");
                 } else {
                     advance(); //eats up characters in the source code stream while appropriately updating the "operatorIndex" variable.
                 }
@@ -183,58 +200,6 @@ public class Lexer {
             //a comment goes until the end of the line.
             while (peek() != '\n' && !isAtEnd()) advance();
         }
-    }
-
-    private char peek()
-    {
-        if (isAtEnd()) return '\0';
-        else return source.charAt(current);
-    }
-
-    private char peek(int n)    //code credit: Robert Nystrom.
-    {
-        int current = this.current;
-        int i = n - 1;
-        if (current + i >= source.length()) return '\0';
-        else return source.charAt(current + i);
-    }
-
-    //@SuppressWarnings("DataFlowIssue")
-    private boolean match(char expected)
-    {
-        boolean returnValue;
-        if(isAtEnd()) returnValue = false;
-        else if(expected == source.charAt(current)){
-            current++;
-            returnValue = true;
-        } else{
-            returnValue = false;
-        }
-        return returnValue;
-    }
-
-    private char advance()
-    {
-        int beforeIncrement = current;
-        current++;
-        return source.charAt(beforeIncrement);
-    }
-
-
-    private boolean isAtEnd()
-    {
-        return current >= source.length();
-    }
-
-    private void addOperator(OperatorType type)
-    {
-        addOperator(type, null);
-    }
-
-    private void addOperator(OperatorType type, Object literal)
-    {
-        operators.add(new Operator(type, literal, lineNumber, operatorIndex));
-        operatorIndex++;
     }
 
     private boolean isReserved(char c)
@@ -271,27 +236,5 @@ public class Lexer {
         return returnValue;
     }
 
-    @SuppressWarnings({"TryWithIdenticalCatches", "ResultOfMethodCallIgnored"})
-    private void writeToFile(List<Operator> operators, String filePath) {
-        boolean success = false;
-        while (!success) {
-            File file = new File(filePath);
-            try {
-                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
-                if(operators != null){
-                    for(Operator op : operators){
-                        bufferedWriter.write(op.toString() + "\n");
-                    }
-                }
-                bufferedWriter.close();
-                success = true;
-            } catch (FileNotFoundException e) {
-                try {
-                    file.createNewFile();
-                } catch(Exception e1) {}
-            } catch(Exception e0) {}
-        }
-        //Tool.Debugger.debug(this, "Succesfully wrote to file.");
-    }
 
 }

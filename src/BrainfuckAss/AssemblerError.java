@@ -1,9 +1,9 @@
 package BrainfuckAss;
 
-public class LexerError extends Exception {
+public class AssemblerError extends Exception {
 
     private final int lineNumber;
-    LexerError(int lineNumber, String message){
+    AssemblerError(int lineNumber, String message){
         super(message);
         this.lineNumber = lineNumber;
     }

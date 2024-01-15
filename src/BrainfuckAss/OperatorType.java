@@ -6,7 +6,9 @@ public enum OperatorType {
 
     SET_LOCATOR, BRA, METHOD_CALL, RET,
 
-    OTHER,
+    SET_AV, STAR, DOUBLE_QUOTE, BANG, AT_SYMBOL,
+
+    STRING_LITERAL_CHAR,
 
     EOF
 }
