@@ -1,4 +1,4 @@
-package BrainfuckAss;
+package EDCBA;
 
 import java.io.BufferedWriter;
 import java.io.File;

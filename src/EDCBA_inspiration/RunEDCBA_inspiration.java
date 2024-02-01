@@ -1,14 +1,14 @@
-package BrainfuckOriginal;
+package EDCBA_inspiration;
 
 import java.io.*;
 import java.util.Scanner;
 
 @SuppressWarnings({"CatchMayIgnoreException", "AccessStaticViaInstance"})
-public class RunBrainfuck {
+public class RunEDCBA_inspiration {
 
     private static Scanner javaScanner = new Scanner(System.in);
     @SuppressWarnings({"unused", "InstantiationOfUtilityClass"})
-    private static final BrainfuckEngine brainfuckCore = new BrainfuckEngine();
+    private static final EDCBA_inspirationEngine EDCBA_inspirationCore = new EDCBA_inspirationEngine();
 
     public static void main(String args[]) {
         if (args.length == 1) {
@@ -17,7 +17,7 @@ public class RunBrainfuck {
             System.out.println("Enter the code:");
             String code = javaScanner.nextLine();
             System.out.println("Output:");
-            brainfuckCore.interpret(code);
+            EDCBA_inspirationCore.interpret(code);
         }
     }
 
@@ -34,7 +34,7 @@ public class RunBrainfuck {
             }
             bufferedReader.close();
         } catch (Exception e) {}
-        brainfuckCore.interpret(stripCodeOfWhitespace(codeOfFileStrBuilder.toString()));
+        EDCBA_inspirationCore.interpret(stripCodeOfWhitespace(codeOfFileStrBuilder.toString()));
     }
 
     private static String stripCodeOfWhitespace(String input)

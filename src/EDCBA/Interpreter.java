@@ -1,11 +1,13 @@
-package BrainfuckAss;
+package EDCBA;
+
+import EDCBA_inspiration.EDCBA_inspirationEngine;
 
 import java.util.Map; import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
 @SuppressWarnings({"CatchMayIgnoreException", "RedundantSuppression", "FieldMayBeFinal"})
-public class Interpreter   //Interpreter to the brainfuckAss language.
+public class Interpreter   //Interpreter to the EDCBA_inspiration language.
 {
     private static Scanner ob = new Scanner(System.in);
     private static int ptr; // Data pointer
@@ -32,7 +34,7 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
     }
 
     private static void lazyInterpret(String input) {
-        BrainfuckOriginal.BrainfuckEngine.interpret(input);
+        EDCBA_inspirationEngine.interpret(input);
     }
 
     @SuppressWarnings({"DataFlowIssue", "UnnecessaryLocalVariable"})
@@ -40,7 +42,6 @@ public class Interpreter   //Interpreter to the brainfuckAss language.
         //for (int i = 0; i < s.length(); i++)
         while (true) {
             if (operators.get(operatorIndex).type == OperatorType.EOF) break;
-
             //callStack.debug_print_stack();
             //debugInterpretTop(operators)
 

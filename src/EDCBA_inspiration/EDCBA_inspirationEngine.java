@@ -1,8 +1,8 @@
-package BrainfuckOriginal;
+package EDCBA_inspiration;
 
 import java.util.Scanner;
 
-public class BrainfuckEngine     //code credit: https://www.geeksforgeeks.org/brainfuck-interpreter-java/
+public class EDCBA_inspirationEngine     //code credit: https://www.geeksforgeeks.org/brainfuck-interpreter-java/
 {
     private static Scanner ob = new Scanner(System.in);
     private static int ptr; // Data pointer
@@ -10,7 +10,7 @@ public class BrainfuckEngine     //code credit: https://www.geeksforgeeks.org/br
     // Max memory limit. It is the highest number which
     // can be represented by an unsigned 16-bit binary
     // number. Many computer programming environments
-    // beside brainfuck may have predefined
+    // beside this may have predefined
     // constant values representing 65535.
     private static int length = 65535;
 
@@ -30,16 +30,16 @@ public class BrainfuckEngine     //code credit: https://www.geeksforgeeks.org/br
         while(true)
         {
             if(!(operatorIndex < input.length())) break;
-            // BrainFuck is a tiny language with only
+            // this is a tiny language with only
             // eight instructions. In this loop we check
             // and execute all those eight instructions
 
-            /*Tool.Debugger.debug("reading_BrainfuckCore",
+            /*Tool.Debugger.debug("EDCBA_insp",
                     "Executing: " + input.charAt(operatorIndex));
-            Tool.Debugger.debug("reading_BrainfuckCore",
+            Tool.Debugger.debug("EDCBA_insp",
                     "LOOPTOP:\n\tloopDepth: " + loopDepth + "\n"
                     + "\toperatorIndex: " + operatorIndex);
-            Tool.Debugger.debug("reading_BrainfuckCore",
+            Tool.Debugger.debug("EDCBA_insp",
                     "LOOPBOTTOM:");*/
 
             // > moves the pointer to the right
@@ -98,7 +98,7 @@ public class BrainfuckEngine     //code credit: https://www.geeksforgeeks.org/br
                             loopDepth--;
                         operatorIndex++;
 
-                        /*Tool.Debugger.debug("reading_BrainfuckCore",
+                        /*Tool.Debugger.debug("EDCBA_insp",
                                 "\tloopDepth: " + loopDepth + "\n"
                                         + "\toperatorIndex: " + operatorIndex);*/
                     }
@@ -120,7 +120,7 @@ public class BrainfuckEngine     //code credit: https://www.geeksforgeeks.org/br
                             loopDepth--;
                         operatorIndex--;
 
-                        /*Tool.Debugger.debug("reading_BrainfuckCore",
+                        /*Tool.Debugger.debug("EDCBA_insp",
                                 "\tloopDepth: " + loopDepth + "\n"
                                         + "\toperatorIndex: " + operatorIndex);*/
                     }

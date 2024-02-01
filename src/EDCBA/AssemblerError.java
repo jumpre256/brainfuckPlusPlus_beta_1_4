@@ -1,4 +1,4 @@
-package BrainfuckAss;
+package EDCBA;
 
 public class AssemblerError extends Exception {
 

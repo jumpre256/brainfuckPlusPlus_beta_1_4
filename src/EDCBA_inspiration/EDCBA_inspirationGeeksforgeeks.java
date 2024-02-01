@@ -1,8 +1,8 @@
-package BrainfuckOriginal;
+package EDCBA_inspiration;
 
 import java.util.*;
 
-public class BrainfuckGeeksforgeeks     //code credit: https://www.geeksforgeeks.org/brainfuck-interpreter-java/
+public class EDCBA_inspirationGeeksforgeeks     //code credit: https://www.geeksforgeeks.org/brainfuck-interpreter-java/
 {
     private static Scanner ob = new Scanner(System.in);
     private static int ptr; // Data pointer
@@ -10,7 +10,7 @@ public class BrainfuckGeeksforgeeks     //code credit: https://www.geeksforgeeks
     // Max memory limit. It is the highest number which
     // can be represented by an unsigned 16-bit binary
     // number. Many computer programming environments
-    // beside brainfuck may have predefined
+    // beside this may have predefined
     // constant values representing 65535.
     private static int length = 65535;
 
@@ -27,7 +27,7 @@ public class BrainfuckGeeksforgeeks     //code credit: https://www.geeksforgeeks
         // Parsing through each character of the code
         for (int i = 0; i < s.length(); i++)
         {
-            // BrainFuck is a tiny language with only
+            // this is a tiny language with only
             // eight instructions. In this loop we check
             // and execute all those eight instructions
 
@@ -111,6 +111,6 @@ public class BrainfuckGeeksforgeeks     //code credit: https://www.geeksforgeeks
         }
     }
 
-    public BrainfuckGeeksforgeeks() {}
+    public EDCBA_inspirationGeeksforgeeks() {}
 
 }

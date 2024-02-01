@@ -1,4 +1,4 @@
-package BrainfuckAss;
+package EDCBA;
 
 public class RuntimeError extends RuntimeException {
   private final Operator operator;

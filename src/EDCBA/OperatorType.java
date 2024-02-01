@@ -1,4 +1,4 @@
-package BrainfuckAss;
+package EDCBA;
 
 public enum OperatorType {
     LEFT, RIGHT, ADD, MINUS,
