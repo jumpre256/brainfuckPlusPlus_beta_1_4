@@ -13,15 +13,13 @@ public class Assembler extends AssemblerOperations{
         super(source);
     }
 
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "UnnecessaryLocalVariable"})
     public List<Operator> assemble(String outputPath) {
         //Remove fluff:
         StringBuilder strBuilder = new StringBuilder();
         for (int i = 0; i < source.length(); i++) {
             char c = source.charAt(i);
             if (isReserved(c)) {
-                Tool.Debugger.debug(this,
-                        "in method assemble " + c + ": " + (int)c + "\n", ' ');
                 strBuilder.append(c);
             }
         }
@@ -91,7 +89,6 @@ public class Assembler extends AssemblerOperations{
                 case '?':
                     addOperator(OperatorType.DEBUG_INSTANT_SAFE_QUIT); break;
                 case '\n': {
-                    Debugger.debug(this, "newline char found. " + (int)c);
                     lineNumber++; break;
                 }
                 case '{':
@@ -203,7 +200,6 @@ public class Assembler extends AssemblerOperations{
     private void hash() throws AssemblerError   //handle streams of commented out text initiated with a hashtag character.
             //inspiration for code's structure from Robert Nystrom.
     {
-        Debugger.debug(this, "found hash in source.");
         if(match('{')){
             //in a multiline comment.
             while(true){
@@ -227,7 +223,6 @@ public class Assembler extends AssemblerOperations{
         } else {
             //a comment goes until the end of the line.
             while (peek() != '\n' && !isAtEnd()){
-                Debugger.debug(this, "eat uncontrollably. line " + lineNumber + " current " + current);
                 advance();
             }
         }
@@ -254,15 +249,13 @@ public class Assembler extends AssemblerOperations{
             case '"':
             case '!':
             case '#':
-            /////case '\n':
+            case '\n':
+            ///case 13: //worth considering at some point.
             case '{':
             case '}':
                 returnValue = true; break;
-            case 10: case 13:
             default:
                 returnValue = ((c >= 48) && (c <= 57)) || ((c >= 97) && (c <= 122));
-                Tool.Debugger.debug(this,
-                        c + ": " + (int)c + " bool: " + returnValue + "\n", ' ');
                 break;
 
         }
