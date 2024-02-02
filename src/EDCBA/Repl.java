@@ -23,7 +23,9 @@ public class Repl {
         String noWhitespace = stripCodeOfWhitespace(codeOfFile);
         Assembler assembler = new Assembler(noWhitespace);
         List<Operator> code = assembler.assemble("program.bfac");
-        Interpreter.interpret(code);
+        if(!assembler.hadError) {
+            Interpreter.interpret(code);
+        }
     }
 
     private static String stripCodeOfWhitespace(String input)

@@ -49,6 +49,29 @@ public class AssemblerOperations {
         return returnValue;
     }
 
+    protected char consume(char expected, String errorMessage) throws AssemblerError
+    {
+        //if(isAtEnd()) returnValue = false;
+        if(expected == source.charAt(current)){
+            current++;
+            return expected;
+        } else{
+            throw new AssemblerError(lineNumber, errorMessage);
+        }
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    protected char consume(char[] expected, String errorMessage) throws AssemblerError
+    {
+        for(char c : expected) {
+            if (source.charAt(current) == c) {
+                current++;
+                return c;
+            }
+        }
+        throw new AssemblerError(lineNumber, errorMessage);
+    }
+
     protected char advance()
     {
         int beforeIncrement = current;
