@@ -1,5 +1,7 @@
 package EDCBA;
 
+import Tool.Debugger;
+
 import java.util.List;
 
 @SuppressWarnings({"RedundantSuppression", "StatementWithEmptyBody"})
@@ -18,14 +20,17 @@ public class Assembler extends AssemblerOperations{
         for (int i = 0; i < source.length(); i++) {
             char c = source.charAt(i);
             if (isReserved(c)) {
+                Tool.Debugger.debug(this,
+                        "in method assemble " + c + ": " + (int)c + "\n", ' ');
                 strBuilder.append(c);
             }
         }
         String fluffRemoved = strBuilder.toString();
+        source = fluffRemoved;
         //convert to a list of operators:
         List<Operator> operators = null;
         try {
-            operators = doAssembleMain(fluffRemoved);
+            operators = doAssembleMain();
             operators.add(new Operator(OperatorType.EOF, null, lineNumber, operatorIndex));
         } catch (AssemblerError error) {
             System.err.printf("Error: [line %d]: %s%n", error.getLineNumber(), error.getMessage());
@@ -40,7 +45,7 @@ public class Assembler extends AssemblerOperations{
     }
 
     @SuppressWarnings("ConstantValue")
-    private List<Operator> doAssembleMain(String input) throws AssemblerError
+    private List<Operator> doAssembleMain() throws AssemblerError
     {
         while (!isAtEnd()) {
             char c = advance();
@@ -85,8 +90,10 @@ public class Assembler extends AssemblerOperations{
                     hash(); break;
                 case '?':
                     addOperator(OperatorType.DEBUG_INSTANT_SAFE_QUIT); break;
-                case '\n':
+                case '\n': {
+                    Debugger.debug(this, "newline char found. " + (int)c);
                     lineNumber++; break;
+                }
                 case '{':
                 case '}':   //'{' and '}' characters on their own are ignored for now.
                     break;      //TODO: more rigorously evaluate in the case of this situation.
@@ -196,6 +203,7 @@ public class Assembler extends AssemblerOperations{
     private void hash() throws AssemblerError   //handle streams of commented out text initiated with a hashtag character.
             //inspiration for code's structure from Robert Nystrom.
     {
+        Debugger.debug(this, "found hash in source.");
         if(match('{')){
             //in a multiline comment.
             while(true){
@@ -218,13 +226,16 @@ public class Assembler extends AssemblerOperations{
             //do nothing.
         } else {
             //a comment goes until the end of the line.
-            while (peek() != '\n' && !isAtEnd()) advance();
+            while (peek() != '\n' && !isAtEnd()){
+                Debugger.debug(this, "eat uncontrollably. line " + lineNumber + " current " + current);
+                advance();
+            }
         }
     }
 
     private boolean isReserved(char c)
     {
-        boolean returnValue;
+        boolean returnValue = false;
         switch(c){
             case '[':
             case ']':
@@ -243,13 +254,15 @@ public class Assembler extends AssemblerOperations{
             case '"':
             case '!':
             case '#':
-            case '\n':
+            /////case '\n':
             case '{':
             case '}':
                 returnValue = true; break;
+            case 10: case 13:
             default:
                 returnValue = ((c >= 48) && (c <= 57)) || ((c >= 97) && (c <= 122));
-                //Tool.Debugger.debug(this, c + ": " + (int)c + "\n", ' ');
+                Tool.Debugger.debug(this,
+                        c + ": " + (int)c + " bool: " + returnValue + "\n", ' ');
                 break;
 
         }

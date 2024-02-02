@@ -12,7 +12,7 @@ public class AssemblerOperations {
     protected int lineNumber = 1;
     protected int current = 0;
     protected int operatorIndex = 0;
-    protected final String source;
+    protected String source;
     @SuppressWarnings("FieldMayBeFinal")
     protected List<Operator> operators = new ArrayList<>();
 
