@@ -41,7 +41,7 @@ public class Interpreter
         while (true) {
             if (operators.get(operatorIndex).type == OperatorType.EOF) break;
             //callStack.debug_print_stack();
-            //debugInterpretTop(operators)
+            //debugInterpretTop(operators);
 
             // RIGHT moves the pointer to the right
             if (operators.get(operatorIndex).type == OperatorType.RIGHT) {
