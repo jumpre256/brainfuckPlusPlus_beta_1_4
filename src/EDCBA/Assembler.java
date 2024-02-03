@@ -1,5 +1,7 @@
 package EDCBA;
 
+import Tool.Debugger;
+
 import java.util.List;
 
 @SuppressWarnings({"RedundantSuppression", "StatementWithEmptyBody"})
@@ -148,7 +150,19 @@ public class Assembler extends AssemblerOperations{
             case SET_LOCATOR:
             default:
             {
-
+                while(peek() == '\n' && !isAtEnd()){
+                    advance();
+                    lineNumber++;
+                }
+                //Debugger.debug(this, "isAtEnd?: " + isAtEnd());
+                if(isAtEnd()) {
+                    addOperator(OperatorType.SET_LOCATOR_Z_EOF, z_locator_key+26);
+                } else if(peek() != '$') {
+                    throw new AssemblerError(lineNumber,
+                            "Must be '$' or EOF in source after setting a z locator.");
+                } else {
+                    addOperator(OperatorType.SET_LOCATOR_Z, z_locator_key + 26);
+                }
                 break;
             }
         }
@@ -166,17 +180,6 @@ public class Assembler extends AssemblerOperations{
             addOperator(OperatorType.SET_LOCATOR, ((int)nextChar) - 96);
         } else if (nextChar == 122) {
             z_character(OperatorType.SET_LOCATOR);
-            //Debugger.debug(this, "locatorKey: " + locatorKey);
-            //Debugger.debug(this, "lineNumber " + lineNumber + " " + Integer.toString(nextChar));
-            /*nextChar = advance();
-            while(nextChar == '\n' && !isAtEnd()){
-                nextChar = advance();
-                lineNumber++;
-                //Debugger.debug(this, "lineNumber " + lineNumber + " " + Integer.toString(nextChar));
-            }
-            if(nextChar != '$') throw new AssemblerError(lineNumber,
-                    "Must have a '$' in source after setting a z locator.");
-            addOperator(OperatorType.SET_LOCATOR_Z, locatorKey+26);*/
         } else if(nextChar == '\0') {
             //do nothing.
          } else {
@@ -209,6 +212,7 @@ public class Assembler extends AssemblerOperations{
         char nextChar = advance();
         while(nextChar == '\n'){
             nextChar = advance();
+            lineNumber++;
         }
         boolean isValidLocator = (nextChar >= 97) && (nextChar <= 121); //is 'a' to 'y'
         if(isValidLocator){
@@ -277,7 +281,6 @@ public class Assembler extends AssemblerOperations{
             case '!':
             case '#':
             case '\n':
-            ///case 13: //worth considering at some point.
             case '{':
             case '}':
                 returnValue = true; break;
