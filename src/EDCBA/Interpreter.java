@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 @SuppressWarnings({"CatchMayIgnoreException", "RedundantSuppression", "FieldMayBeFinal"})
-public class Interpreter   //Interpreter to the EDCBA_inspiration language.
+public class Interpreter
 {
     private static Scanner ob = new Scanner(System.in);
     private static int ptr; // Data pointer
@@ -19,13 +19,14 @@ public class Interpreter   //Interpreter to the EDCBA_inspiration language.
     private static int operatorIndex = 0; // Parsing through each character of the code
     private static final Map<Integer, Locator> regularLocatorMap = new HashMap<>();
     private static final Map<Integer, Locator> zLocatorMap = new HashMap<>();
+    private static int sectionCode = -1;
     private static byte activeVault = 0; //activeVault stores 0 at the start of the program.
     private static List<Operator> operators;
 
     public static void interpret(List<Operator> operators) {
         Interpreter.operators = operators;
         fillOutLocatorMap(operators); //decided what may be called "indicators" are officially called "locators"
-        //Tool.Debugger.debug("Interpreter", locatorMap);
+        Tool.Debugger.debug("Interpreter", regularLocatorMap);
         try {
             fullInterpret(operators);
         } catch(RuntimeError error) {
@@ -38,7 +39,7 @@ public class Interpreter   //Interpreter to the EDCBA_inspiration language.
         EDCBA_inspirationEngine.interpret(input);
     }
 
-    @SuppressWarnings({"DataFlowIssue", "UnnecessaryLocalVariable"})
+    @SuppressWarnings({"DataFlowIssue", "UnnecessaryLocalVariable", "UnusedAssignment"})
     public static void fullInterpret(List<Operator> operators) {
         //for (int i = 0; i < s.length(); i++)
         while (true) {
@@ -166,7 +167,7 @@ public class Interpreter   //Interpreter to the EDCBA_inspiration language.
                 }
                 if(targetLocator != null) {
                     if(targetLocator.type == OperatorType.SET_LOCATOR_Z) {
-                        callStack.push(previousPartOfCodeExecutedIndex);        //so when RET is hit, returns to the next instruction after the call is made.
+                        callStack.push(previousPartOfCodeExecutedIndex);   //so when RET is hit, returns to the next instruction after the call is made.
                         operatorIndex = targetLocator.operatorIndex;
                     }
                 }
@@ -181,20 +182,27 @@ public class Interpreter   //Interpreter to the EDCBA_inspiration language.
         }
     }
 
-    private static void fillOutLocatorMap(List<Operator> operators) //for now SET_LOCATOR_Z works the same (CON'T)
-        //[] as SET_LOCATOR, I think this is for the best and is probably the correct final solution too.
+    private static void fillOutLocatorMap(List<Operator> operators)
     {
         for (Operator op : operators) {
-            if (op.type == OperatorType.SET_LOCATOR)    //for now SET_LOCATOR_Z works the same (CON'T)
-                //[] as SET_LOCATOR, I think this is for the best and is probably the correct final solution too.
+            if (op.type == OperatorType.SET_LOCATOR)
             {
                 int literal = (int)op.literal;
-                Locator locator = new Locator(literal, op.operatorIndex, op.type);
+                Locator locator = new Locator(literal, op.operatorIndex, op.type, sectionCode);
                 regularLocatorMap.put((int) op.literal, locator);
-            } else if(op.type == OperatorType.SET_LOCATOR_Z || op.type == OperatorType.SET_LOCATOR_Z_EOF) {
+            }
+            else if(op.type == OperatorType.CALL_Z && sectionCode == -1){
+                sectionCode = (int)op.literal;
+                Tool.Debugger.debug("Interpreter", "new section code: " + sectionCode);
+            }
+            else if(op.type == OperatorType.SET_LOCATOR_Z || op.type == OperatorType.SET_LOCATOR_Z_EOF) {
                 int literal = (int)op.literal;
-                Locator locator = new Locator(literal, op.operatorIndex, op.type);
+                Locator locator = new Locator(literal, op.operatorIndex, op.type, -64); //value -64 is used to indicate section codes are (CON'T)
+                //[...] irrelevant for these set_locator operators.
                 zLocatorMap.put((int) op.literal, locator);
+                if(sectionCode == (int)op.literal){
+                    sectionCode = -1;
+                }
             }
         }
     }
