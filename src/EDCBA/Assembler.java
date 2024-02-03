@@ -1,7 +1,5 @@
 package EDCBA;
 
-import Tool.Debugger;
-
 import java.util.List;
 
 @SuppressWarnings({"RedundantSuppression", "StatementWithEmptyBody"})
@@ -127,10 +125,11 @@ public class Assembler extends AssemblerOperations{
     }
 
     //@SuppressWarnings("DuplicatedCode")
-    private int get_z_number() throws AssemblerError
+    private void z_character(OperatorType operatorType) throws AssemblerError
     {
         char[] digits = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
-        if(match('0')) return 0;
+        int z_locator_key;
+        if(match('0')) z_locator_key = 0;
         else{
             StringBuilder strBuilder = new StringBuilder();
             char firstChar = consume(digits, "'z' character must be followed by an integer.");
@@ -140,7 +139,18 @@ public class Assembler extends AssemblerOperations{
                 strBuilder.append(advance());
                 c = peek();
             }
-            return Integer.parseInt(strBuilder.toString());
+            z_locator_key = Integer.parseInt(strBuilder.toString());
+        }
+        switch(operatorType)
+        {
+            case METHOD_CALL:
+            case BRA: break;
+            case SET_LOCATOR:
+            default:
+            {
+
+                break;
+            }
         }
     }
 
@@ -155,18 +165,18 @@ public class Assembler extends AssemblerOperations{
         if(isValidLocator){
             addOperator(OperatorType.SET_LOCATOR, ((int)nextChar) - 96);
         } else if (nextChar == 122) {
-            int locatorKey = get_z_number();
-            Debugger.debug(this, "locatorKey: " + locatorKey);
-            Debugger.debug(this, "lineNumber " + lineNumber + " " + Integer.toString(nextChar));
-            nextChar = advance();
+            z_character(OperatorType.SET_LOCATOR);
+            //Debugger.debug(this, "locatorKey: " + locatorKey);
+            //Debugger.debug(this, "lineNumber " + lineNumber + " " + Integer.toString(nextChar));
+            /*nextChar = advance();
             while(nextChar == '\n' && !isAtEnd()){
                 nextChar = advance();
                 lineNumber++;
-                Debugger.debug(this, "lineNumber " + lineNumber + " " + Integer.toString(nextChar));
+                //Debugger.debug(this, "lineNumber " + lineNumber + " " + Integer.toString(nextChar));
             }
             if(nextChar != '$') throw new AssemblerError(lineNumber,
                     "Must have a '$' in source after setting a z locator.");
-            addOperator(OperatorType.SET_LOCATOR_Z, locatorKey+26);
+            addOperator(OperatorType.SET_LOCATOR_Z, locatorKey+26);*/
         } else if(nextChar == '\0') {
             //do nothing.
          } else {
@@ -185,8 +195,8 @@ public class Assembler extends AssemblerOperations{
         if(isValidLocator){
             addOperator(OperatorType.METHOD_CALL, ((int)nextChar) - 96);
         } else if (nextChar == 122) {
-            int locatorKey = get_z_number();
-            addOperator(OperatorType.CALL_Z, locatorKey+26);
+            z_character(OperatorType.METHOD_CALL);
+            //addOperator(OperatorType.CALL_Z, locatorKey+26);
         } else if(nextChar == '\0') {
             //do nothing.
         } else {
@@ -204,8 +214,8 @@ public class Assembler extends AssemblerOperations{
         if(isValidLocator){
             addOperator(OperatorType.BRA, ((int)nextChar) - 96);
         } else if (nextChar == 122) {
-            int locatorKey = get_z_number();
-            addOperator(OperatorType.CALL_Z, locatorKey+26);
+            z_character(OperatorType.BRA);
+            //addOperator(OperatorType.CALL_Z, locatorKey+26);
         } else if(nextChar == '\0') {
             //do nothing.
         } else {
