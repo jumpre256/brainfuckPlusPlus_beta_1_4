@@ -139,7 +139,7 @@ public class Interpreter   //Interpreter to the EDCBA_inspiration language.
             //For the RET operator, of symbol: "$"
             else if(operators.get(operatorIndex).type == OperatorType.RET)
             {
-                //Tool.Debugger.debug("Interpreter", "tried to evaluate a RET operator.");
+                //Tool.Debugger.debug("<Interpreter>", "\nEvaluating a RET operator. Operator index: " + operatorIndex);
                 int returnAddress = callStack.pop();
                 operatorIndex = returnAddress;
             }
@@ -156,14 +156,19 @@ public class Interpreter   //Interpreter to the EDCBA_inspiration language.
 
             else if(operators.get(operatorIndex).type == OperatorType.CALL_Z)
             {
-                //Locator targetLocator = zLocatorMap.get(...
+                Locator targetLocator = null;
                 Operator currentOperator = operators.get(operatorIndex);
                 int previousPartOfCodeExecutedIndex = operatorIndex;
-                callStack.push(previousPartOfCodeExecutedIndex);        //so when RET is hit, returns to the next instruction after the call is made.
-                if(regularLocatorMap.containsKey((int)currentOperator.literal)){
-                    Locator targetLocator = regularLocatorMap.get((int)currentOperator.operatorIndex);
+                if(zLocatorMap.containsKey((int)currentOperator.literal)){
+                    targetLocator = zLocatorMap.get((int)currentOperator.literal);
                 } else {
                     throw new RuntimeError(currentOperator, "Tried to call method at locator that does not exist.");
+                }
+                if(targetLocator != null) {
+                    if(targetLocator.type == OperatorType.SET_LOCATOR_Z) {
+                        callStack.push(previousPartOfCodeExecutedIndex);        //so when RET is hit, returns to the next instruction after the call is made.
+                        operatorIndex = targetLocator.operatorIndex;
+                    }
                 }
             }
 

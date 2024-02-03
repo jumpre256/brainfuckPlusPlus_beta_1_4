@@ -266,6 +266,7 @@ public class Assembler extends AssemblerOperations{
         switch(c){
             case '[':
             case '$':
+            case '?':
             case ']':
             case '+':
             case '-':

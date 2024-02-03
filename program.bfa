@@ -1,12 +1,13 @@
 ##target: badge makes
 
-;z5
+#  ;z5
 
 |b
 
 :a #print out the result at the end.
 .>.>.>.>.>.>.>.>.>.>.>
 $
+
 #|c
 
 :
@@ -72,13 +73,17 @@ $
 +++++++++++++ #s
 <<<<<<<<<<
 
+;z5
+
 #print out the result:
 ;a
 
 :c
 
+?
 
 
 :z5
+$
 
 
