@@ -17,7 +17,8 @@ public class Interpreter   //Interpreter to the EDCBA_inspiration language.
     private static final Stack callStack = new Stack();
     private static int loopDepth = 0;
     private static int operatorIndex = 0; // Parsing through each character of the code
-    private static final Map<Integer, Integer> locatorMap = new HashMap<>();
+    private static final Map<Integer, Locator> regularLocatorMap = new HashMap<>();
+    private static final Map<Integer, Locator> zLocatorMap = new HashMap<>();
     private static byte activeVault = 0; //activeVault stores 0 at the start of the program.
     private static List<Operator> operators;
 
@@ -117,8 +118,8 @@ public class Interpreter   //Interpreter to the EDCBA_inspiration language.
                 Operator currentOperator = operators.get(operatorIndex);
                 int previousPartOfCodeExecutedIndex = operatorIndex;
                 callStack.push(previousPartOfCodeExecutedIndex);        //so when RET is hit, returns to the next instruction after the call is made.
-                if(locatorMap.containsKey((int)currentOperator.literal)){
-                    operatorIndex = locatorMap.get((int)currentOperator.literal);
+                if(regularLocatorMap.containsKey((int)currentOperator.literal)){
+                    operatorIndex = regularLocatorMap.get((int)currentOperator.literal).operatorIndex;
                 } else {
                     throw new RuntimeError(currentOperator, "Tried to call method at locator that does not exist.");
                 }
@@ -128,8 +129,8 @@ public class Interpreter   //Interpreter to the EDCBA_inspiration language.
             else if(operators.get(operatorIndex).type == OperatorType.BRA)
             {
                 Operator currentOperator = operators.get(operatorIndex);
-                if(locatorMap.containsKey((int)currentOperator.literal)){
-                    operatorIndex = locatorMap.get((int)currentOperator.literal);
+                if(regularLocatorMap.containsKey((int)currentOperator.literal)){
+                    operatorIndex = regularLocatorMap.get((int)currentOperator.literal).operatorIndex;
                 } else {
                     throw new RuntimeError(currentOperator, "Tried to jump to a locator that does not exist.");
                 }
@@ -153,6 +154,19 @@ public class Interpreter   //Interpreter to the EDCBA_inspiration language.
                 memory[ptr] = activeVault;
             }
 
+            else if(operators.get(operatorIndex).type == OperatorType.CALL_Z)
+            {
+                //Locator targetLocator = zLocatorMap.get(...
+                Operator currentOperator = operators.get(operatorIndex);
+                int previousPartOfCodeExecutedIndex = operatorIndex;
+                callStack.push(previousPartOfCodeExecutedIndex);        //so when RET is hit, returns to the next instruction after the call is made.
+                if(regularLocatorMap.containsKey((int)currentOperator.literal)){
+                    Locator targetLocator = regularLocatorMap.get((int)currentOperator.operatorIndex);
+                } else {
+                    throw new RuntimeError(currentOperator, "Tried to call method at locator that does not exist.");
+                }
+            }
+
             else if(operators.get(operatorIndex).type == OperatorType.DEBUG_INSTANT_SAFE_QUIT)
             {
                 break;
@@ -166,10 +180,16 @@ public class Interpreter   //Interpreter to the EDCBA_inspiration language.
         //[] as SET_LOCATOR, I think this is for the best and is probably the correct final solution too.
     {
         for (Operator op : operators) {
-            if (op.type == OperatorType.SET_LOCATOR || op.type == OperatorType.SET_LOCATOR_Z)    //for now SET_LOCATOR_Z works the same (CON'T)
+            if (op.type == OperatorType.SET_LOCATOR)    //for now SET_LOCATOR_Z works the same (CON'T)
                 //[] as SET_LOCATOR, I think this is for the best and is probably the correct final solution too.
             {
-                locatorMap.put((int) op.literal, op.operatorIndex);
+                int literal = (int)op.literal;
+                Locator locator = new Locator(literal, op.operatorIndex, op.type);
+                regularLocatorMap.put((int) op.literal, locator);
+            } else if(op.type == OperatorType.SET_LOCATOR_Z || op.type == OperatorType.SET_LOCATOR_Z_EOF) {
+                int literal = (int)op.literal;
+                Locator locator = new Locator(literal, op.operatorIndex, op.type);
+                zLocatorMap.put((int) op.literal, locator);
             }
         }
     }

@@ -146,7 +146,11 @@ public class Assembler extends AssemblerOperations{
         switch(operatorType)
         {
             case METHOD_CALL:
-            case BRA: break;
+            case BRA:
+            {
+                addOperator(OperatorType.CALL_Z, z_locator_key+26);
+                break;
+            }
             case SET_LOCATOR:
             default:
             {
@@ -199,7 +203,6 @@ public class Assembler extends AssemblerOperations{
             addOperator(OperatorType.METHOD_CALL, ((int)nextChar) - 96);
         } else if (nextChar == 122) {
             z_character(OperatorType.METHOD_CALL);
-            //addOperator(OperatorType.CALL_Z, locatorKey+26);
         } else if(nextChar == '\0') {
             //do nothing.
         } else {
@@ -219,7 +222,6 @@ public class Assembler extends AssemblerOperations{
             addOperator(OperatorType.BRA, ((int)nextChar) - 96);
         } else if (nextChar == 122) {
             z_character(OperatorType.BRA);
-            //addOperator(OperatorType.CALL_Z, locatorKey+26);
         } else if(nextChar == '\0') {
             //do nothing.
         } else {
