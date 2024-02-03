@@ -1,12 +1,10 @@
 package EDCBA;
 
-import EDCBA_inspiration.EDCBA_inspirationEngine;
-
 import java.util.Map; import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
-@SuppressWarnings({"CatchMayIgnoreException", "RedundantSuppression", "FieldMayBeFinal"})
+@SuppressWarnings({"CatchMayIgnoreException", "RedundantSuppression", "FieldMayBeFinal", "DuplicatedCode"})
 public class Interpreter
 {
     private static Scanner ob = new Scanner(System.in);
@@ -26,21 +24,18 @@ public class Interpreter
     public static void interpret(List<Operator> operators) {
         Interpreter.operators = operators;
         fillOutLocatorMap(operators); //decided what may be called "indicators" are officially called "locators"
-        Tool.Debugger.debug("Interpreter", regularLocatorMap);
+        //Tool.Debugger.debug("Interpreter", regularLocatorMap);
+        //Tool.Debugger.debug("Interpreter", zLocatorMap);
         try {
-            fullInterpret(operators);
+            interpretCore(operators);
         } catch(RuntimeError error) {
             Repl.runtimeError(error);
         }
-        //lazyInterpret(input);
     }
 
-    private static void lazyInterpret(String input) {
-        EDCBA_inspirationEngine.interpret(input);
-    }
 
     @SuppressWarnings({"DataFlowIssue", "UnnecessaryLocalVariable", "UnusedAssignment"})
-    public static void fullInterpret(List<Operator> operators) {
+    public static void interpretCore(List<Operator> operators) {
         //for (int i = 0; i < s.length(); i++)
         while (true) {
             if (operators.get(operatorIndex).type == OperatorType.EOF) break;
@@ -116,13 +111,24 @@ public class Interpreter
             //For the METHOD_CALL operator, of symbol: ";a"
             else if(operators.get(operatorIndex).type == OperatorType.METHOD_CALL)
             {
+                Locator targetLocator = null;
                 Operator currentOperator = operators.get(operatorIndex);
                 int previousPartOfCodeExecutedIndex = operatorIndex;
-                callStack.push(previousPartOfCodeExecutedIndex);        //so when RET is hit, returns to the next instruction after the call is made.
                 if(regularLocatorMap.containsKey((int)currentOperator.literal)){
-                    operatorIndex = regularLocatorMap.get((int)currentOperator.literal).operatorIndex;
+                    targetLocator = regularLocatorMap.get((int)currentOperator.literal);
                 } else {
-                    throw new RuntimeError(currentOperator, "Tried to call method at locator that does not exist.");
+                    throw new RuntimeError(currentOperator, "Tried to call method into a locator that does not exist.");
+                }
+
+                if(targetLocator != null){
+                    boolean validToMethodCall = sectionCode == targetLocator.sectionCode;
+                    if(validToMethodCall) {
+                        callStack.push(previousPartOfCodeExecutedIndex);  //so when RET is hit, returns to the next instruction after the call is made.
+                        operatorIndex = targetLocator.operatorIndex;
+                    } else {
+                        throw new RuntimeError(currentOperator,
+                                "Tried to call method into a locator that has not been correctly loaded through a z-locator call.");
+                    }
                 }
             }
 
@@ -165,10 +171,13 @@ public class Interpreter
                 } else {
                     throw new RuntimeError(currentOperator, "Tried to call method at locator that does not exist.");
                 }
-                if(targetLocator != null) {
+                if(targetLocator != null)   //successfully executes the CALL_Z operator:
+                {
                     if(targetLocator.type == OperatorType.SET_LOCATOR_Z) {
                         callStack.push(previousPartOfCodeExecutedIndex);   //so when RET is hit, returns to the next instruction after the call is made.
                         operatorIndex = targetLocator.operatorIndex;
+                        sectionCode = (int)targetLocator.literal;
+                        //Tool.Debugger.debug("<Interpreter>", "\nsection code set to: " + sectionCode + " when operator index is: " + operatorIndex);
                     }
                 }
             }
@@ -193,7 +202,7 @@ public class Interpreter
             }
             else if(op.type == OperatorType.CALL_Z && sectionCode == -1){
                 sectionCode = (int)op.literal;
-                Tool.Debugger.debug("Interpreter", "new section code: " + sectionCode);
+                //Tool.Debugger.debug("Interpreter", "new section code in fill stage: " + sectionCode);
             }
             else if(op.type == OperatorType.SET_LOCATOR_Z || op.type == OperatorType.SET_LOCATOR_Z_EOF) {
                 int literal = (int)op.literal;
