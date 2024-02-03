@@ -7,13 +7,17 @@ import java.util.Scanner;
 @SuppressWarnings({"CatchMayIgnoreException", "AccessStaticViaInstance", "DuplicatedCode", "RedundantSuppression"})
 public class Repl {
 
+    private static final String replLanguageTitle = "EDCBA language";
+
     private static final Scanner javaScanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         if (args.length == 1) {
-            runFile(args[0]);
+            if(FileHandleTools.fileExists(args[0])) runFile(args[0]);
+            else System.err.println("File passed as args[0] does not exist.");
         } else {
-            System.err.print("Invalid use of program.");
+            String filePath = userInterface_chooseFile();
+            runFile(filePath);
         }
     }
 
@@ -66,5 +70,31 @@ public class Repl {
         } catch (Exception e) {}
 
         return codeOfFileStrBuilder.toString();
+    }
+
+    @SuppressWarnings("UnusedAssignment")
+    private static String userInterface_chooseFile() //not amazingly-well coded method, but very much acceptable.
+    {
+        System.out.println("Type \"run\" to run program.bfa.");
+        System.out.println("Type anything else to attempt to run that file.");
+        String userInput;
+        boolean hadError = false;
+        while(true){
+            if(!hadError) System.out.print("> ");
+            else System.out.print("\n> ");
+            hadError = false;
+            userInput = javaScanner.nextLine();
+            if(userInput.equals("run")){
+                userInput = "program.bfa";
+                break;
+            } else{
+                if(FileHandleTools.fileExists(userInput)) break;
+                else {
+                    System.err.println("File " + userInput + " does not exist.");
+                    hadError = true;
+                }
+            }
+        }
+        return userInput;
     }
 }
