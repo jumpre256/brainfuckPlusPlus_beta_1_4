@@ -26,6 +26,7 @@ public class Interpreter
         fillOutLocatorMap(operators); //decided what may be called "indicators" are officially called "locators"
         //Tool.Debugger.debug("Interpreter", regularLocatorMap);
         //Tool.Debugger.debug("Interpreter", zLocatorMap);
+        sectionCode = -64; //can't call a-y without loading through appropriate z-call-thing (badly written comment to be improved later) //TODO
         try {
             interpretCore(operators);
         } catch(RuntimeError error) {
@@ -135,11 +136,22 @@ public class Interpreter
             //For the BRA operator, of symbol: "|a"
             else if(operators.get(operatorIndex).type == OperatorType.BRA)
             {
+                Locator targetLocator = null;
                 Operator currentOperator = operators.get(operatorIndex);
                 if(regularLocatorMap.containsKey((int)currentOperator.literal)){
-                    operatorIndex = regularLocatorMap.get((int)currentOperator.literal).operatorIndex;
+                    targetLocator = regularLocatorMap.get((int)currentOperator.literal);
                 } else {
                     throw new RuntimeError(currentOperator, "Tried to jump to a locator that does not exist.");
+                }
+
+                if(targetLocator != null){
+                    boolean validToMethodCall = sectionCode == targetLocator.sectionCode;
+                    if(validToMethodCall) {
+                        operatorIndex = targetLocator.operatorIndex;
+                    } else {
+                        throw new RuntimeError(currentOperator,
+                                "Tried to jump to a locator that has not been correctly loaded through a z-locator call.");
+                    }
                 }
             }
 
@@ -178,6 +190,8 @@ public class Interpreter
                         operatorIndex = targetLocator.operatorIndex;
                         sectionCode = (int)targetLocator.literal;
                         //Tool.Debugger.debug("<Interpreter>", "\nsection code set to: " + sectionCode + " when operator index is: " + operatorIndex);
+                    } else if(targetLocator.type == OperatorType.SET_LOCATOR_Z_EOF){
+                        sectionCode = (int)targetLocator.literal;
                     }
                 }
             }
