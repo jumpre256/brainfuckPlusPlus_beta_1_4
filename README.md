@@ -7,18 +7,18 @@ to provide just a few new programming features.
 
 To start, if not already, one should be familiar with brainfuck. There are many resources for learning this, one is: [Basics of BrainFuck](https://gist.github.com/roachhd/dce54bec8ba55fb17d3a).
 
-For the following "`Main operators and characters new to brainfuck++:`" section of text we will use:  
-`0` for any positive integer or zero, i.e., ... `114`, `1023`, etc., up to positive infinity.  
-`a` for any (lowercase) character `a` to `y`, i.e., not `z`.
+For the following "`1. Main operators and characters new to brainfuck++:`" section of text we will use:  
+- `0` for any positive integer or zero, i.e., ... `114`, `1023`, etc., up to positive infinity.  
+- `a` for any (lowercase) character `a` to `y`, i.e., not `z`.
 
 #### 1. Main operators and characters new to brainfuck++:
-- Locator `:z0` (read "set locator z `0`")
+- Locator `:z0` (read "set locator z `0`")  
 For basic programs, the user is encouraged to place one of these operators at the end of their program. Using `;z0` (where the `0` matches the `0` in "`:z0`") loads all the `:a` locators between the starting `;z0` and ending `:z0`. Essentially allowing assembly-like sections in brainfuck++'s own quirky way...
-- Locator `:a` (read "set locator `a`")
+- Locator `:a` (read "set locator `a`")  
 This operator is like an assembly label. When `:a` is placed between a `;z0` and `:z0` pair, within the program it can be jumped to with a `;a` or `|a` operator.
-- Operator `|a`
+- Operator `|a`  
 Jumps immediately to the corresponding `:a`. Can be thought of as a "branch-always" assembly instruction.
-- The `#` character
+- The `#` character  
 Can be used to write a single-line comment that is terminated by ending the line of code with the return key.
 - Operators `$` and `;a`  
 I feel these are best communicated through some example code.
@@ -46,13 +46,13 @@ Finally, we look at `*^` and then `{}`.
 
 In brainfuck++, in addition to the array of memory provided by regular brainfuck, this language provides an additional 1 single byte of variable memory, I like to call the "`active vault`" (or `AV` for short).
 
-- Operator `^` (read "set `AV`")
+- Operator `^` (read "set `AV`")  
 Copies the value in the current cell into the `active vault`.
 
-- Operator `*` (read "get `AV`")
+- Operator `*` (read "get `AV`")  
 Copies the value from the `active vault` into the current cell.
 
-- Characters `{` and `}`
+- Characters `{` and `}`  
 Simply for multi-line comments. Multi-line comments begin with `#{` and end with `}#`. Nested multi-line comments are not supported/allowed.
 
 #### 3. Motivation:
