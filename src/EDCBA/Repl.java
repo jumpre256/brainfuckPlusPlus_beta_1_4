@@ -9,7 +9,9 @@ public class Repl {
 
     private static final String replLanguageTitle = "EDCBA language";
     private static final String sourceFileExtension = ".bfa";
-    private static final String compiledFileExtension = ".bfac";
+    private static final String preCompliedFileName = "program"; //honestly a slightly bad name since this implementation of (CON'T)
+    //[..] brainfuck++ is interpreted not compiled, but if you look inside the "pre-compiled" file you'll understand what this thing is.
+    private static final String preCompiledFileExtension = ".bfac";
     private static final Scanner javaScanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -28,7 +30,7 @@ public class Repl {
         String codeOfFile = loadFile(filePath);
         String noWhitespace = stripCodeOfWhitespace(codeOfFile);
         Assembler assembler = new Assembler(noWhitespace);
-        List<Operator> code = assembler.assemble("program" + compiledFileExtension);
+        List<Operator> code = assembler.assemble(preCompliedFileName + preCompiledFileExtension);
         if(!assembler.hadError) {
             Interpreter.interpret(code);
         }
