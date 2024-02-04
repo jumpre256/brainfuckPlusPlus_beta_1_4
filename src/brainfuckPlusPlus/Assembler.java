@@ -1,6 +1,4 @@
-package EDCBA;
-
-import Tool.Debugger;
+package brainfuckPlusPlus;
 
 import java.util.List;
 

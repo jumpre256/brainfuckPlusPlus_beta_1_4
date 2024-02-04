@@ -1,4 +1,4 @@
-package EDCBA;
+package brainfuckPlusPlus;
 
 import java.io.*;
 import java.util.List;
@@ -67,7 +67,7 @@ public class Repl {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                //Tool.debugger.debug("EDCBA", line);
+                //Tool.debugger.debug("brainfuckPlusPlus", line);
                 codeOfFileStrBuilder.append(line).append("\n");
             }
             bufferedReader.close();

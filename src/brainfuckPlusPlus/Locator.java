@@ -1,4 +1,4 @@
-package EDCBA;
+package brainfuckPlusPlus;
 
 public class Locator {
 
