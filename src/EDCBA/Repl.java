@@ -8,10 +8,12 @@ import java.util.Scanner;
 public class Repl {
 
     private static final String replLanguageTitle = "EDCBA language";
-
+    private static final String sourceFileExtension = ".bfa";
+    private static final String compiledFileExtension = ".bfac";
     private static final Scanner javaScanner = new Scanner(System.in);
 
     public static void main(String[] args) {
+        System.out.println(replLanguageTitle);
         if (args.length == 1) {
             if(FileHandleTools.fileExists(args[0])) runFile(args[0]);
             else System.err.println("File passed as args[0] does not exist.");
@@ -26,7 +28,7 @@ public class Repl {
         String codeOfFile = loadFile(filePath);
         String noWhitespace = stripCodeOfWhitespace(codeOfFile);
         Assembler assembler = new Assembler(noWhitespace);
-        List<Operator> code = assembler.assemble("program.bfac");
+        List<Operator> code = assembler.assemble("program" + compiledFileExtension);
         if(!assembler.hadError) {
             Interpreter.interpret(code);
         }
@@ -75,7 +77,7 @@ public class Repl {
     @SuppressWarnings("UnusedAssignment")
     private static String userInterface_chooseFile() //not amazingly-well coded method, but very much acceptable.
     {
-        System.out.println("Type \"run\" to run program.bfa.");
+        System.out.println("Type \"run\" to run program" + sourceFileExtension + ".");
         System.out.println("Type anything else to attempt to run that file.");
         String userInput;
         boolean hadError = false;
@@ -85,7 +87,7 @@ public class Repl {
             hadError = false;
             userInput = javaScanner.nextLine();
             if(userInput.equals("run")){
-                userInput = "program.bfa";
+                userInput = "program" + sourceFileExtension;
                 break;
             } else{
                 if(FileHandleTools.fileExists(userInput)) break;
